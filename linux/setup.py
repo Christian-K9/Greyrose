@@ -17,9 +17,9 @@ forwarders = {debian: "https://download.splunk.com/products/universalforwarder/#
             fedora: "https://download.splunk.com/products/universalforwarder/releases/#10.0.1/linux/splunkforwarder-10.0.1-c486717c322b.x86_64.rpm"
 }
 
+log_name = subprocess.run(["sudo", "grep", "-Po", "'^NAME="\K[^"]+' /etc/os-release"])
 #Centralized logging in ubuntu.log file
-log_name = f"{machines[server]}.log
-basicConfic(level=logging.DEBUG, filename="log_name", 
+basicConfic(level=logging.DEBUG, filename=log_name, 
     filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
 
 #run nftables based on loaded configuration file
