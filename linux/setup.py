@@ -48,6 +48,12 @@ logging.debug("Enabling nftables service")
 #reloading changes based on conf table
 subprocess.run(["sudo", "nft", "nftables.conf"])
 
+#create service
+subprocess.run(["cp", "Greyrose.service", "etc/systemd/system/Greyrose.service"])
+subprocess.run(["sudo", "systemctl", "daemon-reload"])
+subprocess.run(["sudo", "systemctl", "start", "Greyrose.service"])
+subprocess.run(["sudo", "systemctl ", "enable", "Greyrose.service"])
+
 #get splunk forwarder off the internet
 print("Feting splunk forwarder off the internet...")
 subprocess.run(["wget", "-splunkforwarder.tgz", "forwarders[server]"])

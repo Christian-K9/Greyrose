@@ -1,0 +1,13 @@
+[Unit]
+Description=Checks For Known Vunerabilities
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /sbin/tracker.py
+WorkingDirectory=/sbin
+Restart=on-failure
+User=root
+
+[Install]
+WantedBy=multi-user.target
