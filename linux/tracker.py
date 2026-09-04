@@ -1,6 +1,7 @@
 import sys
 import logging
 import os
+import time
 
 #get list from firewall
 sys.path.inset(0, '/usr/local/sbin')
@@ -110,3 +111,11 @@ def getOutputOf(command):
     except OSError as e:
         # e.g., command not found
         return str(e).strip()
+
+def run():
+    checkUsers()
+    checkIPs()
+    checkProcesses()
+    checkServices()
+    checkCrontab()
+    checkServices()
