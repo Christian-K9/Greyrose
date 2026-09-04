@@ -5,6 +5,8 @@ import subprocess
 #list of ports and ips
 accepted_ports = [80, 443, 9997]
 blocked_ports = [22]
+allowed_services = []
+blocked_services = []
 allowed_users = []
 blocked_users = []
 whitelist = []
@@ -77,6 +79,13 @@ def remove_user(user):
         return
     if user in allowed_users:
         allowed_users.remove(user)
+    blocked_users.append(user)
+
+#function to remove users
+def remove_user(user):
+    if user in blocked_users
+        print("user is already blocked")
+        return
     blocked_users.append(user)
 
 #interactive interface for administrator
