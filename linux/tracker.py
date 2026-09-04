@@ -11,6 +11,8 @@ allowed_users = firewall.allwoed_users
 blocked_users = firewall.blocked_users
 whitelist = firewall.whitelist
 blacklist = firewall.blacklist
+allowed_services = firewall.allowed_services
+blocked_services = firewall.blocked_services
 reverseShellFlags = [r"python3?\s+-c\b", r"/bin/(ba)?sh\s+-i\b", r"nc\s+.*-e\b", r"ncat\s+.*-e\b", r"socat\s+.*EXEC\b"]
 
 #Rules for users
@@ -43,6 +45,7 @@ def checkProcesses():
                 pid = processConts[1]
                 os.kill(int(pid), signal.SIGKILL)
 
+# Checks For ips that are not allowed by root
 def checkIPs():
     connections = getOutputOf("who")
     connectionsSplit = connections.split("\n")
@@ -50,34 +53,32 @@ def checkIPs():
         connection = connection.split()
         if len(connection) >= 5:
             ipSplit = connection[4].split('.')
-            if (len(ipSplit) == 4) and (connection[4] not in allowedIPs):
+            if (len(ipSplit) == 4) and (connection[4] not in whitelist):
                 user = connection[0]
                 seat = connection[1]
-                os.system('echo "These are not the machines you are looking for." | write ' + user + " " + seat)
                 os.system("pkill -KILL -t " + seat)
                 date = connection[2]
                 time = connection[3]
                 remoteIP = connection[4]
-                triggerAlert(datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S') + " - Unrecognized IP address '" + remoteIP + "' connected to the system as user '" + user + "' on " + date + " at " + time)
 
+# Checks for any additions to the crontab
 def checkCrontab():
     f = open("/etc/crontab", "r")
     contents = f.read()
     f.close()
     if len(contents) > 0:
         if (contents != "\n"):
-            triggerAlert(datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S') + " - Contents found in /etc/crontab:" + contents)
             f = open("/etc/crontab", "w")
             f.write("\n")
             f.close()
 
+# Checks for Services that are not allowed
 def checkServices():
     services = getOutputOf("systemctl list-units --type=service --state=running")
     servicesSplit = services.split("\n")
     for service in servicesSplit:
-        for blacklistedService in blacklistedServices:
+        for blacklistedService in blocked_services:
             if blacklistedService in service:
-                triggerAlert(datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S') + " - Blacklisted service found and stopped: " + service)
                 serviceName = service.split()[0]
                 os.system("systemctl stop " + serviceName)
                 os.system("systemctl disable " + serviceName)
@@ -85,13 +86,11 @@ def checkServices():
                 os.system("systemctl daemon-reload")
 
 def getOutputOf(command):
-    """
-    Run a command and return stdout (or stderr if the command fails).
-    Accepts either a shell string or a list argv.
-    """
-    # shell=True if a single shell string; False if a list/tuple argv
+    #Check if the command is a string. If it is, It goes through the shell
     shell = isinstance(command, StringTypes)
 
+    #Start running the command in the background to set up
+    # Pipes are used to capture the normal output (stdout) and possible error messages (stderr).
     try:
         proc = subprocess.Popen(
             command,
@@ -102,10 +101,12 @@ def getOutputOf(command):
         )
         out, err = proc.communicate()
 
+        # Check if command failed or not
         if proc.returncode != 0:
             return (err or "").strip()
         return (out or "").strip()
 
+    # Catch Exceptional Errors
     except OSError as e:
         # e.g., command not found
         return str(e).strip()
