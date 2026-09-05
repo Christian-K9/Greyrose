@@ -1,5 +1,7 @@
 import subprocess
 import logging
+import os
+import venv
 
 #assign splunk forwarder based on machine
 forwarders = {"debian": "https://download.splunk.com/products/universalforwarder/releases/10.0.3/linux/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.deb",
@@ -48,12 +50,27 @@ def act_II():
     subprocess.run(["sudo", "nft", "-f", "nftables.conf"])
 
 def act_III():
+    #create python environment to prevent any dependency issues
+    #side note: this is optional. not all linux machines have undependable python libraries
+    print("creating python environment")
+    venv_dir = "ccdc_venv"
+    venv.create(venv_dir, with_pip=True)
+    python_executable = os.path.join(venv_dir, "bin", "python")
+
+    #upgrading pip inside newly created python virtual environment
+    subprocess.run([python_executable, "-m", "pip", "install", "--upgrade", "pip"], check=True)
+
+    #installing mariadb for database
+    subprocess.run([python_executable, "-m", "pip", "install", "mariadb"], check=True)
+
     subprocess.run(["sudo", "cp", "firewall", "/usr/local/bin/firewall"])
     subprocess.run(["sudo", "chmod", "755", "/usr/local/bin/firewall"])
     #create service
+    new_location = f's|^ExecStart=.*|ExecStart={python_executable}| /usr/loca/bin/tracker.py'
+    subprocess.run(["sudo", "sed", new_location, "Greyrose.service"])
     subprocess.run(["sudo", "cp", "Greyrose.service", "/etc/systemd/system/Greyrose.service"])
-    subprocess.run(["sudo", "cp", "tracker.py", "/sbin/tracker.py"])
-    subprocess.run(["sudo", "chmod", "700", "/sbin/tracker.py"])
+    subprocess.run(["sudo", "cp", "tracker.py", "/usr/local/bin/tracker.py"])
+    subprocess.run(["sudo", "chmod", "700", "/usr/local/bin/tracker.py"])
     subprocess.run(["sudo", "systemctl", "daemon-reload"])
     subprocess.run(["sudo", "systemctl", "start", "Greyrose.service"])
     subprocess.run(["sudo", "systemctl ", "enable", "Greyrose.service"])
@@ -103,4 +120,6 @@ def epilogue():
 
     #move quarentine to root directory
     subprocess.run(["mv", "quarantine", "/root/quarantine"])
-act_IV()
+act_I()
+act_II()
+act_III()

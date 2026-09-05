@@ -4,8 +4,10 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python3 /sbin/tracker.py
-WorkingDirectory=/sbin
+# START: LOCATION OF EXECSTART
+ExecStart=/home/chris/Greyrose/linux/venv/bin/python3 /usr/local/bin/tracker.py
+# END: LOCATION OF EXECSTART
+WorkingDirectory=/usr/local/bin
 Restart=on-failure
 User=root
 

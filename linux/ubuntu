@@ -1,6 +1,3 @@
-2026-09-04 17:38:30,572 - DEBUG - Running nftables
-2026-09-04 17:38:30,616 - DEBUG - Starting nftable service
-2026-09-04 17:38:30,822 - DEBUG - Enabling nftables service
-2026-09-04 17:38:34,930 - DEBUG - Fetched splunk forwarder off the internet
-2026-09-04 17:38:49,582 - DEBUG - Started Splunk
-2026-09-04 17:39:18,433 - DEBUG - Added new monitors to splunk
+2026-09-05 08:33:54,095 - DEBUG - Running nftables
+2026-09-05 08:33:54,136 - DEBUG - Starting nftable service
+2026-09-05 08:33:54,391 - DEBUG - Enabling nftables service

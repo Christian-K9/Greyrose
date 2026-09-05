@@ -1,55 +1,55 @@
 CREATE DATABASE IF NOT EXISTS Greyrose_DB;
 
 CREATE USER 'greyrose_user'@'localhost' IDENTIFIED BY 'password';
-GRANT SELECT, INSERT, UPDATE ON greyrose_user.* TO 'greyrose_user'@'localhost';
+GRANT ALL PRVILEGES ON Greyrose_DB.* TO 'greyrose_user'@'localhost';
 FLUSH PRIVILEGES;
 
 USE Greyrose_DB;
 
 CREATE TABLE IF NOT EXISTS accepted_ports (
-    id int AUTOINCREMENT PRIMARY KEY,
-    port int,
-    time_added CURRENT_TIME
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    port INT,
+    time_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
 
 CREATE TABLE IF NOT EXISTS blocked_ports (
-    id int AUTOINCREMENT PRIMARY KEY,
-    port int,
-    time_added CURRENT_TIME
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    port INT,
+    time_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
 
 CREATE TABLE IF NOT EXISTS allow_services (
-    id int AUTOINCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     name varchar(50),
-    time_added CURRENT_TIME
+    time_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
 
 CREATE TABLE IF NOT EXISTS blocked_services (
-    id int AUTOINCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     name varchar(50),
-    time_added CURRENT_TIME
+    time_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
 
 CREATE TABLE IF NOT EXISTS allowed_users (
-    id int AUTOINCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     name varchar(50),
-    time_added CURRENT_TIME
+    time_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
 
 CREATE TABLE IF NOT EXISTS blocked_users (
-    id int AUTOINCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     name varchar(50),
-    time_added CURRENT_TIME
+    time_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
 
 CREATE TABLE IF NOT EXISTS whitelist (
-    id int AUTOINCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     ip varchar(32),
-    time_added CURRENT_TIME
+    time_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
 
 CREATE TABLE IF NOT EXISTS blacklist (
-    id int AUTOINCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     ip varchar(32),
-    time_added CURRENT_TIME
+    time_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )

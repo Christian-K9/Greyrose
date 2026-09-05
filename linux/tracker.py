@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys
 import logging
 import os
@@ -5,15 +7,16 @@ import time
 import subprocess
 import re
 from xml.dom.minicompat import StringTypes
+import mariadb
 
 #connect with the mariadb database
 try:
     conn = mariadb.connect(
-        user="greyrose_user"
-        password="password"
-        host="127.0.0.1",
-        port=3306
-        database=Greyrose_DB
+        user="greyrose_user",
+        password="password",
+        host="localhost",
+        port=3306,
+        database="Greyrose_DB"
     )
 except mariadb.Error as e:
     print(f"error connecting to MariaDB: {e}")
@@ -74,9 +77,11 @@ def checkUsers():
         group_id = userSplit[3]
         if (username not in allowed_users):
             if (username in blocked_users) or ((user_id == '0') or (group_id == '0')):
-                os.system("userdel " + username)
+                #os.system("userdel " + username)
+                subprocess.run(["sudo", "userdel", username])
             elif (int(user_id) >= 1000):
-                os.system("userdel " + userSplit[0])
+                #os.system("userdel " + userSplit[0])
+                subprocess.run(["sudo", "userdel", userSplit[0]])
 
 # Checks Processes that are flagged for being a potentially reverse shell
 def checkProcesses():
@@ -112,9 +117,10 @@ def checkCrontab():
     f.close()
     if len(contents) > 0:
         if (contents != "\n"):
-            f = open("/etc/crontab", "w")
-            f.write("\n")
-            f.close()
+            #f = open("/etc/crontab", "w")
+            #f.write("\n")
+            #f.close()
+            subprocess.run(["sudo", "truncate", "-s", "0", "/etc/crontab"])
 
 # Checks for Services that are not allowed
 def checkServices():
