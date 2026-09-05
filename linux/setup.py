@@ -1,7 +1,6 @@
 import subprocess
 import logging
 import os
-import venv
 
 #assign splunk forwarder based on machine
 forwarders = {"debian": "https://download.splunk.com/products/universalforwarder/releases/10.0.3/linux/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.deb",
@@ -23,6 +22,8 @@ while server not in machines:
         print("Not Valid Operating System Name")
 
 def act_I():
+    print("running updates")
+    subprocess.run(["sudo", "apt", "update"])
     log_name = server
     print(f"Log Name: {log_name}")
     #Centralized logging in ubuntu.log file
@@ -54,15 +55,25 @@ def act_III():
     #side note: this is optional. not all linux machines have undependable python libraries
     print("creating python environment")
     venv_dir = "ccdc_venv"
-    venv.create(venv_dir, with_pip=True)
-    python_executable = os.path.join(venv_dir, "bin", "python")
-
+    subprocess.run(["sudo", "apt", "install", "libmariadb-dev", "build-essential",
+                    "python3-dev", "-y"])
+    subprocess.run(["sudo", "apt", "install", "python3-venv"])
+    subprocess.run(["sudo", "python3", "-m", "venv", venv_dir])
+    python_executable = f"{venv_dir}/bin/python3"
+    subprocess.run(["sudo", "chown", "-R", "$USER:USER", venv_dir])
     #upgrading pip inside newly created python virtual environment
+    print("Installing necessary dependencies")
+    subprocess.run([python_executable, "pip", "install", "mariadb[binary]"])
+    subprocess.run([python_executable, "-m", "pip", "install", "--upgrade", "pip", "setuptools", "wheel"])
     subprocess.run([python_executable, "-m", "pip", "install", "--upgrade", "pip"], check=True)
 
     #installing mariadb for database
+    subprocess.run(["sudo", "apt", "install", "mariadb-server", "mariadb-client", "-y"])
     subprocess.run([python_executable, "-m", "pip", "install", "mariadb"], check=True)
 
+    #activate mariadb
+    subprocess.run(["sudo", "systemctl", "enable", "mariadb"])
+    subprocess.run(["sudo", "systemctl", "start", "mariadb"])
     subprocess.run(["sudo", "cp", "firewall", "/usr/local/bin/firewall"])
     subprocess.run(["sudo", "chmod", "755", "/usr/local/bin/firewall"])
     #create service
@@ -120,6 +131,5 @@ def epilogue():
 
     #move quarentine to root directory
     subprocess.run(["mv", "quarantine", "/root/quarantine"])
-act_I()
-act_II()
+
 act_III()
