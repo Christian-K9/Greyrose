@@ -1,7 +1,9 @@
 #!/bin/bash
 
-executable="$PWD/ccdc_venv/bin/python"
-sudo "$executable" -m pip install mariadb[binary]
-sudo "$executable" -m pip install setuptools wheel
-sudo "$executable" -m pip install mariadb
+sudo chown $USER:$USER ccdc_venv
+executable="$PWD/ccdc_venv/bin/python3"
+"$executable/bin/activate"
+"$executable" -m pip install mariadb[binary]
+"$executable" -m pip install setuptools wheel
+"$executable" -m pip install mariadb
 
