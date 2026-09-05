@@ -1,7 +1,11 @@
 CREATE DATABASE IF NOT EXISTS Greyrose_DB;
 
-CREATE USER 'greyrose_user'@'localhost' IDENTIFIED BY 'password';
-GRANT ALL PRVILEGES ON Greyrose_DB.* TO 'greyrose_user'@'localhost';
+CREATE USER IF NOT EXISTS 'greyrose_user'@'localhost'
+IDENTIFIED BY 'password';
+
+GRANT ALL PRIVILEGES ON Greyrose_DB.* 
+TO 'greyrose_user'@'localhost';
+
 FLUSH PRIVILEGES;
 
 USE Greyrose_DB;
@@ -10,46 +14,22 @@ CREATE TABLE IF NOT EXISTS accepted_ports (
     id INT AUTO_INCREMENT PRIMARY KEY,
     port INT,
     time_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
+);
 
 CREATE TABLE IF NOT EXISTS blocked_ports (
     id INT AUTO_INCREMENT PRIMARY KEY,
     port INT,
     time_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
+);
 
 CREATE TABLE IF NOT EXISTS allow_services (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name varchar(50),
+    name VARCHAR(50),
     time_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
+);
 
 CREATE TABLE IF NOT EXISTS blocked_services (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name varchar(50),
+    name VARCHAR(50),
     time_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
-
-CREATE TABLE IF NOT EXISTS allowed_users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name varchar(50),
-    time_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
-
-CREATE TABLE IF NOT EXISTS blocked_users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name varchar(50),
-    time_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
-
-CREATE TABLE IF NOT EXISTS whitelist (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    ip varchar(32),
-    time_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
-
-CREATE TABLE IF NOT EXISTS blacklist (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    ip varchar(32),
-    time_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
+);

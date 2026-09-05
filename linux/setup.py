@@ -74,17 +74,19 @@ def act_III():
     #activate mariadb
     subprocess.run(["sudo", "systemctl", "enable", "mariadb"])
     subprocess.run(["sudo", "systemctl", "start", "mariadb"])
+    subprocess.run([""])
     subprocess.run(["sudo", "cp", "firewall", "/usr/local/bin/firewall"])
     subprocess.run(["sudo", "chmod", "755", "/usr/local/bin/firewall"])
     #create service
     new_location = f's|^ExecStart=.*|ExecStart={python_executable}| /usr/loca/bin/tracker.py'
-    subprocess.run(["sudo", "sed", new_location, "Greyrose.service"])
+    subprocess.run(["sudo", "sed", "-i", new_location, "Greyrose.service"])
     subprocess.run(["sudo", "cp", "Greyrose.service", "/etc/systemd/system/Greyrose.service"])
     subprocess.run(["sudo", "cp", "tracker.py", "/usr/local/bin/tracker.py"])
     subprocess.run(["sudo", "chmod", "700", "/usr/local/bin/tracker.py"])
+    subprocess.run(["sudo", "chown", "root:$USER", "/usr/local/bin/tracker.py"])
     subprocess.run(["sudo", "systemctl", "daemon-reload"])
-    subprocess.run(["sudo", "systemctl", "start", "Greyrose.service"])
     subprocess.run(["sudo", "systemctl ", "enable", "Greyrose.service"])
+    subprocess.run(["sudo", "systemctl", "start", "Greyrose.service"])
 
 def act_IV():
     #get splunk forwarder off the internet
@@ -125,11 +127,13 @@ def epilogue():
     #Add firewall to sbin
     print("Adding firewall command")
     subprocess.run(["sudo", "cp", "firewall", "/usr/local/sbin/"])
-    subprocess.run(["sudo", "chown", "root:sysadmin", "/usr/local/sbin/firewall"])
+    subprocess.run(["sudo", "chown", "root:sysadmin", "/usr/local/bin/firewall"])
     subprocess.run(["sudo", "chmod", "700", "/usr/local/sbin/firewall"])
     logging.debug("Firewall command set")
 
     #move quarentine to root directory
     subprocess.run(["mv", "quarantine", "/root/quarantine"])
 
+act_I()
+act_II()
 act_III()
