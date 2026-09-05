@@ -2,10 +2,25 @@
 
 import subprocess
 import logging
+import mariadb
 
-#list of ports and ips
-accepted_ports = [80, 443, 9997]
-blocked_ports = [22]
+#connect with the mariadb database
+try:
+    conn = mariadb.connect(
+        user="greyrose_user",
+        password="password",
+        host="127.0.0.1",
+        port=3306,
+        database=Greyrose_DB
+    )
+except mariadb.Error as e:
+    print(f"error connecting to MariaDB: {e}")
+    sys.exit(1)
+
+cursor = conn.cursor()
+
+accepted_ports = []
+blocked_ports = []
 allowed_services = []
 blocked_services = []
 allowed_users = []
@@ -13,14 +28,53 @@ blocked_users = []
 whitelist = []
 blacklist = []
 
-log_name = subprocess.run(["sudo", "grep", "-Po", "'^NAME="\K[^"]+' /etc/os-release"])
+def fetch():
+    #use sql to fetch whitelist, and blacklist
+    cursor.execute("SELECT port FROM accepted_ports")
+    accepted_ports = [row for row in cursor.fetchall()]
+
+    cursor.execute("SELECT port FROM blocked_ports")
+    blocked_ports = [row for row in cursor.fetchall()]
+
+    cursor.execute("SELECT name FROM allowed_services")
+    allowed_services = [row for row in cursor.fetchall()]
+
+    cursor.execute("SELECT name FROM blocked_services")
+    blocked_services = [row for row in cursor.fetchall()]
+
+    cursor.execute("SELECT name FROM allowed_users")
+    allowed_users = [row for row in cursor.fetchall()]
+
+    cursor.execute("SELECT name FROM blocked_users")
+    blocked_users = [row for row in cursor.fetchall()]
+
+    cursor.execute("SELECT ip FROM whitelist")
+    whitelist = [row for row in cursor.fetchall()]
+
+    cursor.execute("SELECT ip FROM blacklist")
+    blacklist = [row for row in cursor.fetchall()]
+
+operating_system = '^NAME=' + " /etc/os-release"
+log_name = subprocess.run(["sudo", "grep", "-Po", operating_system])
 #Centralized logging in ubuntu.log file
-basicConfic(level=logging.DEBUG, filename=log_name, 
-    filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
+#logging.basicConfig(level=logging.DEBUG, filename=ubuntu.log, 
+#    filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
 
 #function to reload table after configuration file change
 def reload():
     subprocess.run(["sudo", "nft", "-f", "nftables.conf"])
+
+#function to add to mariadb database
+def add_to_db(table, value, index):
+    query = f"INSERT INTO {table} (id, {index}, time_added) VALUES (?, ?, ?)"
+    cursor.execute(query, (f"DEFAULT", {value}, DEFAULT))
+    conn.commit()
+
+#funciton to remove from mariadb database
+def remove_from_db(table, value, index):
+    query = f"DELETE FROM {table}, WHERE {index} = ?"
+    cursor.execute(query, value)
+    conn.commit()
 
 #function to add port
 def add_port():
@@ -29,11 +83,11 @@ def add_port():
         print("port already accepted")
         return
     if port_number in blocked_ports:
-        blocked_ports.remove(port_number)
+        remove_from_db("blocked_ports", port_number, "port")
     string_arg = f'/# END: ACCEPTED INSIDE PORT CONNECTION/i \\\ttcp dport {port_number} accept'
     subprocess.run(["sudo", "sed", "-i",
         string_arg, "nftables.conf"])
-    accepted_ports.append(port_number)
+    add_to_db("accepted_ports", port_number, "port")
 
 #function to remove port
 def remove_port():
@@ -42,11 +96,11 @@ def remove_port():
         print("port already blocked")
         return
     if port_number in accepted_ports:
-        accepted_ports.remove(port_number)
+        remove_from_db("accepted_ports", port_number, "port")
     string_arg = f'/# END: DENIED INSIDE PORT CONNECTIONS/i \\\ttcp dport {port_number} accept'
     subprocess.run(["sudo", "sed", "-i",
         string_arg, "nftables.conf"])
-    blocked_ports.append(port_number)
+    add_to_db("blocked_ports", port_number, "port")
 
 #function to add ip address
 def add_ip():
@@ -55,11 +109,11 @@ def add_ip():
         print("ip address is already accepted")
         return
     if ip_address in blacklist:
-        blacklist.remove(ip_address)
+        remove_from_db("blacklist", ip_address, "ip")
     string_arg = f'/# END: ACCEPTED INSIDE IP CONNECTIONS/i \\\ttcp dport {ip_address} accept'
     subprocess.run(["sudo", "sed", "-i",
         string_arg, "nftables.conf"])
-    whitelist.append(ip_address)
+    add_to_db("whitelist", ip_address, "ip")
 
 #function to add remove ip_address
 def remove_ip():
@@ -68,11 +122,11 @@ def remove_ip():
         print("ip address is already blocked")
         return
     if ip_address in whitelist:
-        whitelist.remove(ip_address)
+        remove_from_db("whitelist", ip_address, "ip")
     string_arg = f'/# END: ACCEPTED INSIDE IP CONNECTIONS/i \\\ttcp dport {ip_address} accept'
     subprocess.run(["sudo", "sed", "-i",
         string_arg, "nftables.conf"])
-    blacklist.append(ip_address)
+    add_to_db("blacklist", ip_address, "ip")
 
 #function to add remove users
 def add_user():
@@ -81,45 +135,59 @@ def add_user():
         print("user is already on the whitelist")
         return
     if user in blocked_users:
-        blocked_users.remove(user)
-    allowed_users_users.append(user)
+        remove_from_db("blocked_users", user, "name")
+    add_to_db("allowed_users", user, "name")
 
 #function to remove users
 def remove_user():
     user = input("name of user: ")
-    if user in blocked_users
+    if user in blocked_users:
         print("user is already blocked")
         return
     if user in allowed_users:
-        allowed_users.remove(user)
-    blocked_users.append(user)
+        remove_from_db("allowed_users", user, "name")
+    add_to_db("blocked_users", user, "name")
 
-#function to remove users
-def remove_service():
-    user = input("name of service: ")
-    if user in blocked_users
-        print("user is already blocked")
+#function to add service
+def add_service():
+    service = input("name of service: ")
+    if service in allowed_services:
+        print("service is already blocked")
         return
-    blocked_users.append(user)
+    if user in blocked_services:
+        remove_from_db("blocked_services", service, "name")
+    add_to_db("allowed_services", service, "name")
+
+#function to remove service
+def remove_service():
+    service = input("name of service: ")
+    if service in blocked_services:
+        print("service is already blocked")
+        return
+    if service in allowed_services:
+        remove_from_db("allowed_services", service, "name")
+    add_to_db("blocked_services", service, "name")
 
 #interactive interface for administrator
 def interface():
     while True:
-        print(f"accepted_ports: {accepted_ports}")
-        print(f"blocked_ports: {blocked_ports}")
-        print(f"accepted_users: {accepted_users}")
-        print(f"blocked_users: {blocked_users}")
-        print(f"whitelist: {whitelist}")
-        print(f"blacklist: {blacklist} ")
+        functions = ["0. allow port through network", "1. blocked port"
+                    "2. allow service to run on network", "3. block service"
+                    "4. add ip to whitelist", "5. add ip to blacklist",
+                    "6. allow new user on network", "7. block user on network"]
 
-        changes = {1: add_port, 2: remove_port,
-                    3: add_ip,  4: remove_ip,
-                    5: add_user, 6: remove_user
-                    7: remove_service}
+        for i in functions:
+            print(i)
+        
+        choice = input("Choose function (enter number): ")
 
-        print(changes)
+        functions = [add_port, block_port,
+                    allow_service, blocked_services,
+                    add_ip, remove_ip,
+                    add_user, remove_user]
 
-        change = input("Choose Method: ")
-        if change in changes:
-            changes[i]()
-            reload()
+        functions[choice]()
+
+        
+fetch()
+interface()

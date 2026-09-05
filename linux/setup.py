@@ -45,20 +45,25 @@ def act_II():
     logging.debug("Enabling nftables service")
 
     #reloading changes based on conf table
-    subprocess.run(["sudo", "nft", "nftables.conf"])
+    subprocess.run(["sudo", "nft", "-f", "nftables.conf"])
 
+def act_III():
+    subprocess.run(["sudo", "cp", "firewall", "/usr/local/bin/firewall"])
+    subprocess.run(["sudo", "chmod", "755", "/usr/local/bin/firewall"])
     #create service
-    subprocess.run(["cp", "Greyrose.service", "etc/systemd/system/Greyrose.service"])
+    subprocess.run(["sudo", "cp", "Greyrose.service", "/etc/systemd/system/Greyrose.service"])
+    subprocess.run(["sudo", "cp", "tracker.py", "/sbin/tracker.py"])
+    subprocess.run(["sudo", "chmod", "700", "/sbin/tracker.py"])
     subprocess.run(["sudo", "systemctl", "daemon-reload"])
     subprocess.run(["sudo", "systemctl", "start", "Greyrose.service"])
     subprocess.run(["sudo", "systemctl ", "enable", "Greyrose.service"])
 
-def act_III():
+def act_IV():
     #get splunk forwarder off the internet
     print("Fetching splunk forwarder off the internet...")
     print(f"Forwarder Name: {forwarders[server]}")
     subprocess.run(["sudo", "wget", "-O", "/opt/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.deb", forwarders[server]])
-    subprocess.run(["sudo", "dpkg", "-i", "splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.deb"])
+    subprocess.run(["sudo", "dpkg", "-i", "/opt/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.deb"])
     logging.debug("Fetched splunk forwarder off the internet")
 
     #start splunk forwarder
@@ -98,5 +103,4 @@ def epilogue():
 
     #move quarentine to root directory
     subprocess.run(["mv", "quarantine", "/root/quarantine"])
-
-act_III()
+act_IV()

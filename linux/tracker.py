@@ -2,19 +2,62 @@ import sys
 import logging
 import os
 import time
+import subprocess
+import re
+from xml.dom.minicompat import StringTypes
+
+#connect with the mariadb database
+try:
+    conn = mariadb.connect(
+        user="greyrose_user"
+        password="password"
+        host="127.0.0.1",
+        port=3306
+        database=Greyrose_DB
+    )
+except mariadb.Error as e:
+    print(f"error connecting to MariaDB: {e}")
+    sys.exit(1)
+
+cursor = conn.cursor()
 
 #get list from firewall
-sys.path.inset(0, '/usr/local/sbin')
-import firewall
-accepted_ports = firewall.accepted_ports
-blocked_ports = firewall.blocked_ports
-allowed_users = firewall.allwoed_users
-blocked_users = firewall.blocked_users
-whitelist = firewall.whitelist
-blacklist = firewall.blacklist
-allowed_services = firewall.allowed_services
-blocked_services = firewall.blocked_services
+#import firewall
+accepted_ports = []
+blocked_ports = []
+allowed_users = []
+blocked_users = []
+whitelist = []
+blacklist = []
+allowed_services = []
+blocked_services = []
 reverseShellFlags = [r"python3?\s+-c\b", r"/bin/(ba)?sh\s+-i\b", r"nc\s+.*-e\b", r"ncat\s+.*-e\b", r"socat\s+.*EXEC\b"]
+
+def fetch():
+    #use sql to fetch whitelist, and blacklist
+    cursor.execute("SELECT port FROM accepted_ports")
+    accepted_ports = [row for row in cursor.fetchall()]
+
+    cursor.execute("SELECT port FROM blocked_ports")
+    blocked_ports = [row for row in cursor.fetchall()]
+
+    cursor.execute("SELECT name FROM allowed_services")
+    allowed_services = [row for row in cursor.fetchall()]
+
+    cursor.execute("SELECT name FROM blocked_services")
+    blocked_services = [row for row in cursor.fetchall()]
+
+    cursor.execute("SELECT name FROM allowed_users")
+    allowed_users = [row for row in cursor.fetchall()]
+
+    cursor.execute("SELECT name FROM blocked_users")
+    blocked_users = [row for row in cursor.fetchall()]
+
+    cursor.execute("SELECT ip FROM whitelist")
+    whitelist = [row for row in cursor.fetchall()]
+
+    cursor.execute("SELECT ip FROM blacklist")
+    blacklist = [row for row in cursor.fetchall()]
 
 #Rules for users
 #   1. no suspicious user names
@@ -119,3 +162,6 @@ def run():
     checkServices()
     checkCrontab()
     checkServices()
+    time.sleep(60)
+
+run()
