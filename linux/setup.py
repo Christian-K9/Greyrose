@@ -22,8 +22,8 @@ while server not in machines:
         print("Not Valid Operating System Name")
 
 def act_I():
-    print("running updates")
-    subprocess.run(["sudo", "apt", "update"])
+    #print("running updates")
+    #subprocess.run(["sudo", "apt", "update"])
     log_name = server
     print(f"Log Name: {log_name}")
     #Centralized logging in ubuntu.log file
@@ -53,28 +53,44 @@ def act_II():
 def act_III():
     #create python environment to prevent any dependency issues
     #side note: this is optional. not all linux machines have undependable python libraries
-    print("creating python environment")
     venv_dir = "ccdc_venv"
-    subprocess.run(["sudo", "apt", "install", "libmariadb-dev", "build-essential",
-                    "python3-dev", "-y"])
-    subprocess.run(["sudo", "apt", "install", "python3-venv"])
+
+    #this kept breaking the cpu :(
+    # print("tnstalling python libraries")
+    # subprocess.run(["sudo", "apt-get", "install", "libmariadb-dev", "-y"])
+    # time.sleep(5)
+    # print("installing python build essentials")
+    # subprocess.run(["sudo", "apt", "install", "build-essential", "-y"])
+    # time.sleep(5)
+    # print("installing python-dev package")
+    # subprocess.run(["sudo", "apt", "install", "python3-dev", "-y"])
+    # time.sleep(5)
+    # print("installing python environment creator")
+    # subprocess.run(["sudo", "apt", "install", "python3-venv"])
+    # time.sleep(5)
+    print("creating python environment")
     subprocess.run(["sudo", "python3", "-m", "venv", venv_dir])
     python_executable = f"{venv_dir}/bin/python3"
-    subprocess.run(["sudo", "chown", "-R", "$USER:USER", venv_dir])
+    pip_dir = f"{venv_dir}/bin/pip"
+    subprocess.run(["sudo", "chown", "-R", "$USER:$USER", venv_dir])
     #upgrading pip inside newly created python virtual environment
-    print("Installing necessary dependencies")
-    subprocess.run([python_executable, "pip", "install", "mariadb[binary]"])
-    subprocess.run([python_executable, "-m", "pip", "install", "--upgrade", "pip", "setuptools", "wheel"])
-    subprocess.run([python_executable, "-m", "pip", "install", "--upgrade", "pip"], check=True)
+    # print("Installing necessary dependencies")
+    # subprocess.run([python_executable, "-m", "pip", "install",
+    #      "--no-cache-dir", "--disable-pip-version-check",
+    #       "mariadb[binary]"],
+    #      check=True)
+
+    # subprocess.run([python_executable, "-m", "pip", "install",
+    #      "--upgrade", "--no-cache-dir", "--disable-pip-version-checl",
+    #      "setuptools", "wheel"], check=True)
 
     #installing mariadb for database
-    subprocess.run(["sudo", "apt", "install", "mariadb-server", "mariadb-client", "-y"])
-    subprocess.run([python_executable, "-m", "pip", "install", "mariadb"], check=True)
+    # subprocess.run(["sudo", "apt", "install", "mariadb-server", "mariadb-client", "-y"])
+    # subprocess.run([python_executable, "-m", "pip", "install", "mariadb"], check=True)
 
     #activate mariadb
     subprocess.run(["sudo", "systemctl", "enable", "mariadb"])
     subprocess.run(["sudo", "systemctl", "start", "mariadb"])
-    subprocess.run([""])
     subprocess.run(["sudo", "cp", "firewall", "/usr/local/bin/firewall"])
     subprocess.run(["sudo", "chmod", "755", "/usr/local/bin/firewall"])
     #create service
@@ -127,7 +143,7 @@ def epilogue():
     #Add firewall to sbin
     print("Adding firewall command")
     subprocess.run(["sudo", "cp", "firewall", "/usr/local/sbin/"])
-    subprocess.run(["sudo", "chown", "root:sysadmin", "/usr/local/bin/firewall"])
+    subprocess.run(["sudo", "chown", "root:$USER", "/usr/local/bin/firewall"])
     subprocess.run(["sudo", "chmod", "700", "/usr/local/sbin/firewall"])
     logging.debug("Firewall command set")
 
