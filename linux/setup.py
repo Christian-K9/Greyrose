@@ -101,7 +101,7 @@ def act_III():
     subprocess.run(["sudo", "chmod", "755", "/usr/local/bin/firewall"])
 
     #initiate greyrose database
-    subprocess.run(["sudo", "mysql", "-u", "root", "-p", "<", "connectors.sql"])
+    subprocess.run(["sudo", "mysql", "-u", "root", "-ppassword", "<", "connectors.sql"])
     
     #create service
     new_location = f's|^ExecStart=.*|ExecStart={python_executable}| /usr/loca/bin/tracker.py'
