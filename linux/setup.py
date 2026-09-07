@@ -75,7 +75,7 @@ def act_III():
     subprocess.run(["sudo", "chown", "-R", "chris:chris", venv_dir])
     subprocess.run(["sudo", "mkdir", "-p", "wheels"])
     subprocess.run(["sudo", "chown", "-R", "chris:chris", "wheels"])
-    #subprocess.run(["sudo", "./python_install.sh"])
+    subprocess.run(["./python_install.sh"])
     #upgrading pip inside newly created python virtual environment
     # print("Installing necessary dependencies")
     # subprocess.run([python_executable, "-m", "pip", "install",
@@ -154,5 +154,5 @@ def epilogue():
     subprocess.run(["mv", "quarantine", "/root/quarantine"])
 
 act_I()
-act_II()
 act_III()
+act_II()
