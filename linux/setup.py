@@ -117,7 +117,7 @@ def act_III():
     subprocess.run(["sudo", "cp", "tracker.py", "/usr/local/bin/tracker.py"])
     subprocess.run(["sudo", "chmod", "700", "/usr/local/bin/tracker.py"])
     subprocess.run(["sudo", "systemctl", "daemon-reload"])
-    subprocess.run(["sudo", "systemctl ", "enable", "Greyrose.service"])
+    subprocess.run(["sudo", "systemctl", "enable", "Greyrose.service"])
     subprocess.run(["sudo", "systemctl", "start", "Greyrose.service"])
 
 def act_IV():
