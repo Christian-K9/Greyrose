@@ -72,8 +72,10 @@ def act_III():
     subprocess.run(["sudo", "python3", "-m", "venv", venv_dir])
     python_executable = f"{venv_dir}/bin/python3"
     pip_dir = f"{venv_dir}/bin/pip"
-    subprocess.run(["sudo", "chown", "-R", "$USER:$USER", venv_dir])
-    subprocess.run(["sudo", "./python_install.sh"])
+    subprocess.run(["sudo", "chown", "-R", "chris:chris", venv_dir])
+    subprocess.run(["sudo", "mkdir", "-p", "wheels"])
+    subprocess.run(["sudo", "chown", "-R", "chris:chris", "wheels"])
+    #subprocess.run(["sudo", "./python_install.sh"])
     #upgrading pip inside newly created python virtual environment
     # print("Installing necessary dependencies")
     # subprocess.run([python_executable, "-m", "pip", "install",
