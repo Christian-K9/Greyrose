@@ -1,6 +1,7 @@
 import subprocess
 import logging
 import os
+import time
 
 #assign splunk forwarder based on machine
 forwarders = {"debian": "https://download.splunk.com/products/universalforwarder/releases/10.0.3/linux/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.deb",
@@ -22,12 +23,28 @@ while server not in machines:
         print("Not Valid Operating System Name")
 
 def act_I():
-    #print("running updates")
-    subprocess.run(["sudo", "./download.sh"])
+    #installing necessary libraries
+    #putting a 5 second gap between each one so processes don't conflict
+    time.sleep(5)
+    subprocess.run(["sudo", "apt-get", "install", "libmariadb-dev", "-y"])
+    time.sleep(5)
+    subrpocess.run(["sudo", "apt", "install", "python3-dev", "-y"])
+    time.sleep(5)
+    subprocess.run(["sudo", "apt", "install", "build-essential", "-y"])
+    time.sleep(5)
+    subprocess.run(["sudo", "apt", "install", "python3-venv", "-y"])
+    time.sleep(5)
+    subprocess.run(["sudo", "apt", "install", "python3-pip", "-y"])
+    time.sleep(5)
+    subrpocess.run(["sudo", "apt", "install", "mariadb-server", "-y"])
+    time.sleep(5)
+    subprocess.run(["sudo", "apt", "install", "mariadb-client", "-y"])
+    time.sleep(5)
+
     log_name = server
     print(f"Log Name: {log_name}")
     #Centralized logging in ubuntu.log file
-    logging.basicConfig(level=logging.DEBUG, filename=log_name, 
+    logging.basicConfig(level=logging.DEBUG, filename=f"{log_name}.log", 
         filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
 
 def act_II():
@@ -54,20 +71,6 @@ def act_III():
     #create python environment to prevent any dependency issues
     #side note: this is optional. not all linux machines have undependable python libraries
     venv_dir = "ccdc_venv"
-
-    #this kept breaking the cpu :(
-    # print("tnstalling python libraries")
-    # subprocess.run(["sudo", "apt-get", "install", "libmariadb-dev", "-y"])
-    # time.sleep(5)
-    # print("installing python build essentials")
-    # subprocess.run(["sudo", "apt", "install", "build-essential", "-y"])
-    # time.sleep(5)
-    # print("installing python-dev package")
-    # subprocess.run(["sudo", "apt", "install", "python3-dev", "-y"])
-    # time.sleep(5)
-    # print("installing python environment creator")
-    # subprocess.run(["sudo", "apt", "install", "python3-venv"])
-    # time.sleep(5)
     print("creating python environment")
     subprocess.run(["sudo", "python3", "-m", "venv", venv_dir])
     python_executable = f"{venv_dir}/bin/python3"
@@ -75,21 +78,21 @@ def act_III():
     subprocess.run(["sudo", "chown", "-R", "chris:chris", venv_dir])
     subprocess.run(["sudo", "mkdir", "-p", "wheels"])
     subprocess.run(["sudo", "chown", "-R", "chris:chris", "wheels"])
-    subprocess.run(["./python_install.sh"])
-    #upgrading pip inside newly created python virtual environment
-    # print("Installing necessary dependencies")
-    # subprocess.run([python_executable, "-m", "pip", "install",
-    #      "--no-cache-dir", "--disable-pip-version-check",
-    #       "mariadb[binary]"],
-    #      check=True)
 
-    # subprocess.run([python_executable, "-m", "pip", "install",
-    #      "--upgrade", "--no-cache-dir", "--disable-pip-version-checl",
-    #      "setuptools", "wheel"], check=True)
+    #installing python dependencies
+    print("installing python dependencies")
+    executable = "ccdc_venv/bin/python3"
+    time.sleep(5)
+    subprocess.run([executable, "-m", "pip", "download",
+        "mariadb[binary]", "setuptools wheel", "-d wheels"])
+    time.sleep(5)
+    subprocess.run([executable, "-m", "pip", "install" "--no-index",
+        "--find-links=wheels", "setuptools wheel"])
+    time.sleep(5)
+    subprocess.run([executable, "-m", "pip", "install", "--no-index",
+        "--find-links=wheels", "mariadb[binary]"])
+    time.sleep(5)
 
-    #installing mariadb for database
-    # subprocess.run(["sudo", "apt", "install", "mariadb-server", "mariadb-client", "-y"])
-    # subprocess.run([python_executable, "-m", "pip", "install", "mariadb"], check=True)
 
     #activate mariadb
     subprocess.run(["sudo", "systemctl", "enable", "mariadb"])
