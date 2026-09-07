@@ -23,7 +23,7 @@ while server not in machines:
 
 def act_I():
     #print("running updates")
-    #subprocess.run(["sudo", "apt", "update"])
+    subprocess.run(["sudo", "./download.sh"])
     log_name = server
     print(f"Log Name: {log_name}")
     #Centralized logging in ubuntu.log file

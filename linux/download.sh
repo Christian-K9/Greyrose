@@ -8,6 +8,8 @@ sudo apt install python3-dev -y
 sleep 5
 sudo apt install python3-venv -y
 sleep 5
+sudo apt install python3-pip -y
+sleep 5
 sudo apt install mariadb-server -y
 sleep 5
 sudo apt install mariadb-client -y
