@@ -86,7 +86,7 @@ def act_III():
     subprocess.run([executable, "-m", "pip", "download",
         "mariadb[binary]", "setuptools", "wheel", "-d", "wheels"])
     time.sleep(5)
-    subprocess.run([executable, "-m", "pip", "install" "--no-index",
+    subprocess.run([executable, "-m", "pip", "install", "--no-index",
         "--find-links=wheels", "setuptools wheel"])
     time.sleep(5)
     subprocess.run([executable, "-m", "pip", "install", "--no-index",
