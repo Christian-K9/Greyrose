@@ -101,7 +101,14 @@ def act_III():
     subprocess.run(["sudo", "chmod", "755", "/usr/local/bin/firewall"])
 
     #initiate greyrose database
-    subprocess.run(["sudo", "mysql", "-u", "root", "-ppassword", "<", "connectors.sql"])
+    #subprocess.run(["sudo", "mysql", "-u", "root", "-ppassword", "<", "connectors.sql"])
+    with open("connectors.sql", "r") as sql_file:
+        result = subprocess.run(
+            ["sudo", "mariadb", "-u", "root"],
+            stdin=sql_file,
+            capture_output=True,
+            text=True
+        )
     
     #create service
     new_location = f's|^ExecStart=.*|ExecStart={python_executable}| /usr/loca/bin/tracker.py'
@@ -130,7 +137,7 @@ def act_IV():
     splunk = input("What Is The Splunk Ip Address?: ")
     port = input("What is the Splunk Port: ")
     forward_server = f"{splunk}:{port}"
-
+    
     #add monitors
     print("Adding Monitors...")
     subprocess.run(["/opt/splunkforwarder/bin/splunk", "add", "forward-server", "forward_server"])
