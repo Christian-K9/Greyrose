@@ -84,7 +84,7 @@ def act_III():
     executable = "ccdc_venv/bin/python3"
     time.sleep(5)
     subprocess.run([executable, "-m", "pip", "download",
-        "mariadb[binary]", "setuptools wheel", "-d wheels"])
+        "mariadb[binary]", "setuptools", "wheel", "-d", "wheels"])
     time.sleep(5)
     subprocess.run([executable, "-m", "pip", "install" "--no-index",
         "--find-links=wheels", "setuptools wheel"])
