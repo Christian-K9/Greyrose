@@ -158,8 +158,8 @@ def epilogue():
 
     #Add firewall to sbin
     print("Adding firewall command")
-    subprocess.run(["sudo", "cp", "firewall", "/usr/local/sbin/"])
-    subprocess.run(["sudo", "chown", "root:$USER", "/usr/local/bin/firewall"])
+    subprocess.run(["sudo", "cp", "firewall", "/usr/local/bin/firewall"])
+    subprocess.run(["sudo", "chown", "chris:chris", "/usr/local/bin/firewall"])
     subprocess.run(["sudo", "chmod", "700", "/usr/local/sbin/firewall"])
     logging.debug("Firewall command set")
 
