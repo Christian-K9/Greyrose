@@ -53,8 +53,6 @@ def fetch():
     cursor.execute("SELECT ip FROM blacklist")
     blacklist = [row for row in cursor.fetchall()]
 
-operating_system = '^NAME=' + " /etc/os-release"
-log_name = subprocess.run(["sudo", "grep", "-Po", operating_system])
 #Centralized logging in ubuntu.log file
 #logging.basicConfig(level=logging.DEBUG, filename=ubuntu.log, 
 #    filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
@@ -187,6 +185,6 @@ def interface():
 
         functions[choice]()
 
-        
+print("firewall started")        
 fetch()
 interface()
