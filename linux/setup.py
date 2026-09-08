@@ -98,7 +98,7 @@ def act_III():
     subprocess.run(["sudo", "systemctl", "enable", "mariadb"])
     subprocess.run(["sudo", "systemctl", "start", "mariadb"])
     location = subprocess.run(["pwd"], capture_output=True, text=True)
-    shebang = f"{location.stdout}/ccdc_venv/bin python3'"
+    shebang = f"{location.stdout}/ccdc_venv/bin python3"
     print(f"shebang: {shebang}")
     subprocess.run(["sudo", "sed", "-i", f"1i {shebang}", "firewall"])
     subprocess.run(["sudo", "cp", "firewall", "/usr/local/bin/firewall"])
