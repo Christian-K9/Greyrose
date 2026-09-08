@@ -97,6 +97,9 @@ def act_III():
     #activate mariadb
     subprocess.run(["sudo", "systemctl", "enable", "mariadb"])
     subprocess.run(["sudo", "systemctl", "start", "mariadb"])
+    location = subprocess.run(["pwd"], capture_output=True, text=True)
+    result = f"{location.stdout}/ccdc_venv/bin python3"
+    subprocess.run(["sudo", "sed", "-i", "'1i", result, "firewall"])
     subprocess.run(["sudo", "cp", "firewall", "/usr/local/bin/firewall"])
     subprocess.run(["sudo", "chmod", "755", "/usr/local/bin/firewall"])
 
@@ -158,9 +161,8 @@ def epilogue():
 
     #Add firewall to sbin
     print("Adding firewall command")
-    subprocess.run(["sudo", "cp", "firewall", "/usr/local/bin/firewall"])
     subprocess.run(["sudo", "chown", "chris:chris", "/usr/local/bin/firewall"])
-    subprocess.run(["sudo", "chmod", "700", "/usr/local/sbin/firewall"])
+    subprocess.run(["sudo", "chmod", "700", "/usr/local/bin/firewall"])
     logging.debug("Firewall command set")
 
     #move quarentine to root directory
