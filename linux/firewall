@@ -10,7 +10,7 @@ try:
         password="password",
         host="127.0.0.1",
         port=3306,
-        database=Greyrose_DB
+        database="Greyrose_DB"
     )
 except mariadb.Error as e:
     print(f"error connecting to MariaDB: {e}")
