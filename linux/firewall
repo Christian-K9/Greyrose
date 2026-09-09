@@ -95,7 +95,7 @@ def check_additional_requirements():
         print("must be valid connection type")
         return
     transmission_type = input("source or destination: ")
-    if (transmission_type != "source") or (transmission != "destination"):
+    if (transmission_type != "source") and (transmission_type != "destination"):
         print("must be a valid transmission type")
         return
     elif transmission_type == "source":
