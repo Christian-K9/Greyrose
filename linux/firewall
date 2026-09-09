@@ -64,7 +64,7 @@ def reload():
 #function to add to mariadb database
 def add_to_db(table, value, index):
     query = f"INSERT INTO {table} (index) VALUES (%s)"
-    data = (value)
+    data = (value,)
     cursor.execute(query, data)
     conn.commit()
 
