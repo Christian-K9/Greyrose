@@ -24,22 +24,22 @@ while server not in machines:
 
 def act_I():
     #installing necessary libraries
-    #putting a 1 second gap between each one so processes don't conflict
-    time.sleep(1)
+    #putting a 0.1 second gap between each one so processes don't conflict
+    time.sleep(0.1)
     subprocess.run(["sudo", "apt-get", "install", "libmariadb-dev", "-y"])
-    time.sleep(1)
+    time.sleep(0.1)
     subprocess.run(["sudo", "apt", "install", "python3-dev", "-y"])
-    time.sleep(1)
+    time.sleep(0.1)
     subprocess.run(["sudo", "apt", "install", "build-essential", "-y"])
-    time.sleep(1)
+    time.sleep(0.1)
     subprocess.run(["sudo", "apt", "install", "python3-venv", "-y"])
-    time.sleep(1)
+    time.sleep(0.1)
     subprocess.run(["sudo", "apt", "install", "python3-pip", "-y"])
-    time.sleep(1)
+    time.sleep(0.1)
     subprocess.run(["sudo", "apt", "install", "mariadb-server", "-y"])
-    time.sleep(1)
+    time.sleep(0.1)
     subprocess.run(["sudo", "apt", "install", "mariadb-client", "-y"])
-    time.sleep(1)
+    time.sleep(0.1)
 
     log_name = server
     print(f"Log Name: {log_name}")
@@ -82,16 +82,16 @@ def act_III():
     #installing python dependencies
     print("installing python dependencies")
     executable = "ccdc_venv/bin/python3"
-    time.sleep(1)
+    time.sleep(0.1)
     subprocess.run([executable, "-m", "pip", "download",
         "mariadb[binary]", "setuptools", "wheel", "-d", "wheels"])
-    time.sleep(1)
+    time.sleep(0.1)
     subprocess.run([executable, "-m", "pip", "install", "--no-index",
         "--find-links=wheels", "setuptools wheel"])
-    time.sleep(1)
+    time.sleep(0.1)
     subprocess.run([executable, "-m", "pip", "install", "--no-index",
         "--find-links=wheels", "mariadb[binary]"])
-    time.sleep(1)
+    time.sleep(0.1)
 
 
     #activate mariadb
