@@ -76,7 +76,7 @@ def reload():
     subprocess.run(["sudo", "nft", "-f", "nftables.conf"])
 
 #function to add to mariadb database
-def add_to_db(table, value, index, transmission_type=None, connection_type=None)
+def add_to_db(table, value, index, transmission_type=None, connection_type=None):
     if (transmission_type != None) and (connection_type != None):
         query = f"INSERT INTO {table} ({index}) VALUES (DEFAULT, %s, %s, %s, DEFAULT)"
         data = (value, connection_type, transmission_type)
