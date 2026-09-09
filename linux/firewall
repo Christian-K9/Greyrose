@@ -93,7 +93,7 @@ def check_additional_requirements():
     connection_type = input("tcp or udp: ")
     print(f"connection_type {connection_type} ")
     check = connection_type == "tcp"
-    print("check : {check}")
+    print(f"check : {check}")
     if (connection_type != "tcp") or (connection_type != "udp"):
         print("must be valid connection type")
         return
