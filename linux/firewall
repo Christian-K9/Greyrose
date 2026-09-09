@@ -91,7 +91,7 @@ def remove_from_db(table, value, index):
 #function to check for additional requirements
 def check_additional_requirements():
     connection_type = input("tcp or udp: ")
-    if (connection != "tcp") or (connection != "udp"):
+    if (connection_type != "tcp") or (connection_type != "udp"):
         print("must be valid connection type")
         return
     transmission_type = input("source or destination: ")
