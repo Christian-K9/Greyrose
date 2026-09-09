@@ -14,12 +14,16 @@ CREATE TABLE IF NOT EXISTS accepted_ports (
     id INT AUTO_INCREMENT PRIMARY KEY,
     port INT,
     time_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    connection_type varchar(3)
+    transmission_type varchar(5)
 );
 
 CREATE TABLE IF NOT EXISTS blocked_ports (
     id INT AUTO_INCREMENT PRIMARY KEY,
     port INT,
     time_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    connection_type varchar(3)
+    transmission_type varchar(5)
 );
 
 CREATE TABLE IF NOT EXISTS allowed_services (
