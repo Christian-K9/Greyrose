@@ -183,7 +183,10 @@ def interface():
                     add_ip, remove_ip,
                     add_user, remove_user]
 
-        functions[choice]()
+        if choice not in functions:
+            print("not a function")
+        else:
+            functions[choice]()
 
 print("firewall started")        
 fetch()
