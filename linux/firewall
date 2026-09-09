@@ -176,14 +176,14 @@ def interface():
         for i in functions:
             print(i)
         
-        choice = input("Choose function (enter number): ")
+        choice = int(input("Choose function (enter number): "))
 
         functions = [add_port, remove_port,
                     add_service, remove_service,
                     add_ip, remove_ip,
                     add_user, remove_user]
 
-        if (int(choice) < 0) or (int(choice) > 7):
+        if (choice < 0) or (choice > 7):
             print("not a function")
         else:
             functions[choice]()
