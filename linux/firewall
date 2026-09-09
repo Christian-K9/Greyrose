@@ -64,7 +64,8 @@ def reload():
 #function to add to mariadb database
 def add_to_db(table, value, index):
     query = f"INSERT INTO {table} (id, {index}, time_added) VALUES (?, ?, ?)"
-    cursor.execute(query, (f"DEFAULT", {value}, DEFAULT))
+    data = ("DEFAULT", value, "DEFAULT")
+    cursor.execute(query, data)
     conn.commit()
 
 #funciton to remove from mariadb database
