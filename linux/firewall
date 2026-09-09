@@ -31,7 +31,7 @@ blacklist = []
 def fetch():
     global accepted_ports, blocked_ports
     global allowed_services, blocked_services
-    global allowed users_blocked_users
+    global allowed_users, blocked_users
     global whitelist, blacklist
 
     #use sql to fetch whitelist, and blacklist
