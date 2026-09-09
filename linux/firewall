@@ -183,7 +183,7 @@ def interface():
                     add_ip, remove_ip,
                     add_user, remove_user]
 
-        if (choice < 0) or (choice > 7):
+        if (int(choice) < 0) or (int(choice) > 7):
             print("not a function")
         else:
             functions[choice]()
