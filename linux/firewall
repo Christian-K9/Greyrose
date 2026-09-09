@@ -187,6 +187,7 @@ def interface():
             print("not a function")
         else:
             functions[choice]()
+            reload()
 
 print("firewall started")        
 fetch()
