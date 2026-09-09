@@ -3,6 +3,14 @@ import subprocess
 import logging
 import mariadb
 import sys
+import ipaddress
+
+def is_valid_ip(ip_str):
+    try:
+        ipaddress.ip_address(ip_str)
+        return True
+    except ValueError:
+        return False
 
 #connect with the mariadb database
 try:
@@ -80,6 +88,22 @@ def remove_from_db(table, value, index):
     cursor.execute(query, (value,))
     conn.commit()
 
+#function to check for additional requirements
+def check_additional_requirements():
+    connection_type = input("tcp or udp: ")
+    if (connection != "tcp") or (connection != "udp"):
+        print("must be valid connection type")
+        return
+    transmission_type = input("source or destination: ")
+    if (transmission_type != "source") or (transmission != "destination"):
+        print("must be a valid transmission type")
+        return
+    elif transmission_type == "source":
+        transmission_value = "sport"
+    elif transmission_type == "destination":
+        transmission_value == "dport"
+    return connection_type,transmission_value
+
 #function to add port
 def add_port():
     port_number = int(input("Port Number: "))
@@ -88,7 +112,8 @@ def add_port():
         return
     if port_number in blocked_ports:
         remove_from_db("blocked_ports", port_number, "port")
-    string_arg = f'/# END: ACCEPTED INSIDE PORT CONNECTION/i \\\ttcp dport {port_number} accept'
+    connection_type,transmission_value = check_additional_requirements()
+    string_arg = f'/# END: ACCEPTED INSIDE PORT CONNECTION/i \\\t{connection_type} {transmission_value} {port_number} accept'
     subprocess.run(["sudo", "sed", "-i",
         string_arg, "nftables.conf"])
     add_to_db("accepted_ports", port_number, "port")
@@ -101,7 +126,8 @@ def remove_port():
         return
     if port_number in accepted_ports:
         remove_from_db("accepted_ports", port_number, "port")
-    string_arg = f'/# END: DENIED INSIDE PORT CONNECTIONS/i \\\ttcp dport {port_number} accept'
+    connection_type,transmission_value = check_additional_requirements()
+    string_arg = f'/# END: DENIED INSIDE PORT CONNECTIONS/i \\\t{connection_type} {transmission_value} {port_number} deny'
     subprocess.run(["sudo", "sed", "-i",
         string_arg, "nftables.conf"])
     add_to_db("blocked_ports", port_number, "port")
@@ -114,7 +140,11 @@ def add_ip():
         return
     if ip_address in blacklist:
         remove_from_db("blacklist", ip_address, "ip")
-    string_arg = f'/# END: ACCEPTED INSIDE IP CONNECTIONS/i \\\ttcp dport {ip_address} accept'
+    if !(is_valid_ip(ip_address)):
+        print("must be a valid ip address")
+        return
+    connection_type,transmission_value = check_additional_requirements()
+    string_arg = f'/# END: ACCEPTED INSIDE IP CONNECTIONS/i \\\t{connection_type} {transmission_value} {ip_address} accept'
     subprocess.run(["sudo", "sed", "-i",
         string_arg, "nftables.conf"])
     add_to_db("whitelist", ip_address, "ip")
@@ -127,7 +157,8 @@ def remove_ip():
         return
     if ip_address in whitelist:
         remove_from_db("whitelist", ip_address, "ip")
-    string_arg = f'/# END: ACCEPTED INSIDE IP CONNECTIONS/i \\\ttcp dport {ip_address} accept'
+    connection_type,transmission_value = check_additional_requirements()
+    string_arg = f'/# END: ACCEPTED INSIDE IP CONNECTIONS/i \\\t{connection_type} {transmission_value} {ip_address} deny'
     subprocess.run(["sudo", "sed", "-i",
         string_arg, "nftables.conf"])
     add_to_db("blacklist", ip_address, "ip")
@@ -158,7 +189,7 @@ def add_service():
     if service in allowed_services:
         print("service is already blocked")
         return
-    if user in blocked_services:
+    if service in blocked_services:
         remove_from_db("blocked_services", service, "name")
     add_to_db("allowed_services", service, "name")
 
