@@ -168,8 +168,8 @@ def remove_service():
 #interactive interface for administrator
 def interface():
     while True:
-        functions = ["0. allow port through network", "1. blocked port"
-                    "2. allow service to run on network", "3. block service"
+        functions = ["0. allow port through network", "1. blocked port",
+                    "2. allow service to run on network", "3. block service",
                     "4. add ip to whitelist", "5. add ip to blacklist",
                     "6. allow new user on network", "7. block user on network"]
 
@@ -178,8 +178,8 @@ def interface():
         
         choice = input("Choose function (enter number): ")
 
-        functions = [add_port, block_port,
-                    allow_service, blocked_services,
+        functions = [add_port, remove_port,
+                    add_service, remove_service,
                     add_ip, remove_ip,
                     add_user, remove_user]
 
