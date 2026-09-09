@@ -2,6 +2,7 @@
 import subprocess
 import logging
 import mariadb
+import sys
 
 #connect with the mariadb database
 try:
@@ -28,30 +29,35 @@ whitelist = []
 blacklist = []
 
 def fetch():
+    global accepted_ports, blocked_ports
+    global allowed_services, blocked_services
+    global allowed users_blocked_users
+    global whitelist, blacklist
+
     #use sql to fetch whitelist, and blacklist
     cursor.execute("SELECT port FROM accepted_ports")
-    accepted_ports = [row for row in cursor.fetchall()]
+    accepted_ports = [row[0] for row in cursor.fetchall()]
 
     cursor.execute("SELECT port FROM blocked_ports")
-    blocked_ports = [row for row in cursor.fetchall()]
+    blocked_ports = [row[0] for row in cursor.fetchall()]
 
     cursor.execute("SELECT name FROM allowed_services")
-    allowed_services = [row for row in cursor.fetchall()]
+    allowed_services = [row[0] for row in cursor.fetchall()]
 
     cursor.execute("SELECT name FROM blocked_services")
-    blocked_services = [row for row in cursor.fetchall()]
+    blocked_services = [row[0] for row in cursor.fetchall()]
 
     cursor.execute("SELECT name FROM allowed_users")
-    allowed_users = [row for row in cursor.fetchall()]
+    allowed_users = [row[0] for row in cursor.fetchall()]
 
     cursor.execute("SELECT name FROM blocked_users")
-    blocked_users = [row for row in cursor.fetchall()]
+    blocked_users = [row[0] for row in cursor.fetchall()]
 
     cursor.execute("SELECT ip FROM whitelist")
-    whitelist = [row for row in cursor.fetchall()]
+    whitelist = [row[0] for row in cursor.fetchall()]
 
     cursor.execute("SELECT ip FROM blacklist")
-    blacklist = [row for row in cursor.fetchall()]
+    blacklist = [row[0] for row in cursor.fetchall()]
 
 #Centralized logging in ubuntu.log file
 #logging.basicConfig(level=logging.DEBUG, filename=ubuntu.log, 
@@ -63,20 +69,20 @@ def reload():
 
 #function to add to mariadb database
 def add_to_db(table, value, index):
-    query = f"INSERT INTO {table} (index) VALUES (%s)"
+    query = f"INSERT INTO {table} ({index}) VALUES (%s)"
     data = (value,)
     cursor.execute(query, data)
     conn.commit()
 
 #funciton to remove from mariadb database
 def remove_from_db(table, value, index):
-    query = f"DELETE FROM {table}, WHERE {index} = ?"
-    cursor.execute(query, value)
+    query = f"DELETE FROM {table} WHERE {index} = %s"
+    cursor.execute(query, (value,))
     conn.commit()
 
 #function to add port
 def add_port():
-    port_number = input("Port Number: ")
+    port_number = int(input("Port Number: "))
     if port_number in accepted_ports:
         print("port already accepted")
         return
