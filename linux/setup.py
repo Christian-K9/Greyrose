@@ -2,6 +2,7 @@ import subprocess
 import logging
 import os
 import time
+import sys
 
 #assign splunk forwarder based on machine
 forwarders = {"debian": "https://download.splunk.com/products/universalforwarder/releases/10.0.3/linux/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.deb",
@@ -41,11 +42,8 @@ def act_I():
             print(f"Installation failed with exit code: {e.returncode}")
             print("--- Error Details ---")
             print(e.stderr)
-
-        except FileNotFoundError:
-            print("Error: The file could not be found on this system.:")
-
-
+            sys.exit()
+            
     log_name = server
     print(f"Log Name: {log_name}")
     #Centralized logging in ubuntu.log file
