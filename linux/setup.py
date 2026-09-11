@@ -29,6 +29,9 @@ def act_I():
     time.sleep(0.1)
     libraries = ["libmariadb-dev", "python3-dev", "build-essential",
                  "python3-venv", "python3-pip", "mariadb-server", "mariadb-client"]
+    subprocess.run(["sudo", "timedatectl", "set-ntp", "true"])
+    subprocess.run(["sudo", "apt-get", "update"])
+    subprocess.run(["sudo", "apt-get", "--fix-missing-install"])
     for i in libraries:
         command = ["sudo", "apt-get", "install", i, "-y"]
         try:
