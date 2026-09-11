@@ -120,7 +120,7 @@ def add_port():
     string_arg = f'/# END: ACCEPTED INSIDE PORT CONNECTION/i \\\t{connection_type} {transmission_value} {port_number} accept'
     subprocess.run(["sudo", "sed", "-i",
         string_arg, "nftables.conf"])
-    add_to_db("accepted_ports", port_number, "port", transmission_type, connection_type)
+    add_to_db("accepted_ports", port_number, "port", transmission_value, connection_type)
 
 #function to remove port
 def remove_port():
