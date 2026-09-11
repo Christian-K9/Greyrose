@@ -51,7 +51,7 @@ def act_I():
     logging.basicConfig(level=logging.DEBUG, filename=f"{log_name}.log", 
         filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
 
-def act_II():
+def act_III():
     #run nftables based on loaded configuration file
     print("Running nftables...")
     subprocess.run(["sudo", "nft", 
@@ -71,7 +71,7 @@ def act_II():
     #reloading changes based on conf table
     subprocess.run(["sudo", "nft", "-f", "nftables.conf"])
 
-def act_III():
+def act_II():
     #create python environment to prevent any dependency issues
     #side note: this is optional. not all linux machines have undependable python libraries
     venv_dir = "ccdc_venv"
@@ -174,5 +174,5 @@ def epilogue():
     subprocess.run(["mv", "quarantine", "/root/quarantine"])
 
 act_I()
-act_III()
 act_II()
+act_III()
