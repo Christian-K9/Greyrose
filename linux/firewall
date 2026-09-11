@@ -130,7 +130,7 @@ def remove_port():
     string_arg = f'/# END: DENIED INSIDE PORT CONNECTIONS/i \\\t{connection_type} {transmission_value} {port_number} deny'
     subprocess.run(["sudo", "sed", "-i",
         string_arg, "nftables.conf"])
-    add_to_db("blocked_ports", port_number, "port", transmission_type, connection_type)
+    add_to_db("blocked_ports", port_number, "port")
 
 #function to add ip address
 def add_ip():
