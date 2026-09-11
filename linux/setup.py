@@ -26,20 +26,25 @@ def act_I():
     #installing necessary libraries
     #putting a 0.1 second gap between each one so processes don't conflict
     time.sleep(0.1)
-    subprocess.run(["sudo", "apt-get", "install", "libmariadb-dev", "-y"])
-    time.sleep(0.1)
-    subprocess.run(["sudo", "apt", "install", "python3-dev", "-y"])
-    time.sleep(0.1)
-    subprocess.run(["sudo", "apt", "install", "build-essential", "-y"])
-    time.sleep(0.1)
-    subprocess.run(["sudo", "apt", "install", "python3-venv", "-y"])
-    time.sleep(0.1)
-    subprocess.run(["sudo", "apt", "install", "python3-pip", "-y"])
-    time.sleep(0.1)
-    subprocess.run(["sudo", "apt", "install", "mariadb-server", "-y"])
-    time.sleep(0.1)
-    subprocess.run(["sudo", "apt", "install", "mariadb-client", "-y"])
-    time.sleep(0.1)
+    libraries = ["libmariadb-dev", "python3-dev", "build-essesntials",
+                 "python3-venv", "python3-pip", "mariadb-server", "mariadb-client"]
+    for i in libraries:
+        command = ["sudo", "apt", "install", "i", "-y"]
+        try:
+            result = subprocess.run(command, check=True, capture_output=True, text=True)
+            time.sleep(0.1)
+
+            print("Installation Sucessful!")
+            print(result.stdout)
+
+        except subprocess.CalledProcessError as e:
+            print(f"Installation failed with exit code: {e.returncode}")
+            print("--- Error Details ---")
+            print(e.stderr)
+
+        except FileNotFoundError:
+            print("Error: The file could not be found on this system.:")
+
 
     log_name = server
     print(f"Log Name: {log_name}")
