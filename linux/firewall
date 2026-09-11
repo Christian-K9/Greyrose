@@ -105,7 +105,7 @@ def check_additional_requirements():
     elif transmission_type == "source":
         transmission_value = "sport"
     elif transmission_type == "destination":
-        transmission_value == "dport"
+        transmission_value = "dport"
     return connection_type,transmission_value
 
 #function to add port
