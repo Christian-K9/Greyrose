@@ -77,12 +77,8 @@ def reload():
 
 #function to add to mariadb database
 def add_to_db(table, value, index, transmission_type=None, connection_type=None):
-    if (transmission_type != None) and (connection_type != None):
-        query = f"INSERT INTO {table} ({index}) VALUES (DEFAULT, %s, %s, %s, DEFAULT)"
-        data = (value, connection_type, transmission_type)
-    else:
-        query = f"INSERT INTO {table} ({index}) VALUES (%s)"
-        data = (value,)
+    query = f"INSERT INTO {table} ({index}) VALUES (%s)"
+    data = (value,)
     cursor.execute(query, data)
     conn.commit()
 
@@ -120,7 +116,7 @@ def add_port():
     string_arg = f'/# END: ACCEPTED INSIDE PORT CONNECTION/i \\\t{connection_type} {transmission_value} {port_number} accept'
     subprocess.run(["sudo", "sed", "-i",
         string_arg, "nftables.conf"])
-    add_to_db("accepted_ports", port_number, "port", transmission_value, connection_type)
+    add_to_db("accepted_ports", port_number, "port")
 
 #function to remove port
 def remove_port():
