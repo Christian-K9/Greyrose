@@ -30,7 +30,7 @@ def act_I():
     libraries = ["libmariadb-dev", "python3-dev", "build-essesntials",
                  "python3-venv", "python3-pip", "mariadb-server", "mariadb-client"]
     for i in libraries:
-        command = ["sudo", "apt", "install", i, "-y"]
+        command = ["sudo", "apt-get", "install", i, "-y"]
         try:
             result = subprocess.run(command, check=True, capture_output=True, text=True)
             time.sleep(0.1)
