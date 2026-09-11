@@ -144,7 +144,7 @@ def add_ip():
         print("must be a valid ip address")
         return
     connection_type,transmission_value = check_additional_requirements()
-    string_arg = f'/# END: ACCEPTED INSIDE IP CONNECTIONS/i \\\t{connection_type} {transmission_value} {ip_address} accept'
+    string_arg = f'/# END: ACCEPTED IP CONNECTIONS/i \\\t {ip_address}'
     subprocess.run(["sudo", "sed", "-i",
         string_arg, "nftables.conf"])
     add_to_db("whitelist", ip_address, "ip")
@@ -161,7 +161,7 @@ def remove_ip():
         print("must be a valid ip address")
         return
     connection_type,transmission_value = check_additional_requirements()
-    string_arg = f'/# END: ACCEPTED INSIDE IP CONNECTIONS/i \\\t{connection_type} {transmission_value} {ip_address} drop'
+    string_arg = f'/# END: BLOCKED IP CONNECTIONS/i \\\t{ip_address}'
     subprocess.run(["sudo", "sed", "-i",
         string_arg, "nftables.conf"])
     add_to_db("blacklist", ip_address, "ip")
