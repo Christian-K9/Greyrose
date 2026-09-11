@@ -57,3 +57,6 @@ CREATE TABLE IF NOT EXISTS blacklist (
     ip VARCHAR(50),
     time_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+INSERT INTO allowed_services (name)
+VALUES ("Greyrose.service")

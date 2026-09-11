@@ -3,6 +3,7 @@ import logging
 import os
 import time
 import sys
+from pathlib import Path
 
 #assign splunk forwarder based on machine
 forwarders = {"debian": "https://download.splunk.com/products/universalforwarder/releases/10.0.3/linux/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.deb",
@@ -23,6 +24,15 @@ while server not in machines:
     if server.lower() not in machines:
         print("Not Valid Operating System Name")
 
+#get name of operating system via hostnamectl
+operating_system = f"hostnamectl | grep -oP 'Operating System:\\s+\\K\\S+'"
+log_name = subprocess.run(operating_system, shell=True, capture_output=True, text=True)
+#Centralized logging in linux .log file
+logging.basicConfig(level=logging.DEBUG, filename=f"{log_name}.log", 
+        filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
+
+admin = input("Name of administrator (Default name is sysadmin): ")
+
 def act_I():
     #installing necessary libraries
     #putting a 0.1 second gap between each one so processes don't conflict
@@ -39,17 +49,31 @@ def act_I():
             time.sleep(0.1)
 
             print("Installation Sucessful!")
+            logging.debug(f"Installed Library: {i}")
 
+    #in case things go wrong (WHICH THEY SHOULDN'T)
         except subprocess.CalledProcessError as e:
             print(f"Installation failed with exit code: {e.returncode}")
             print("--- Error Details ---")
-            sys.exit()
+            logging.warning(f"Failed to install Library {i}")
+            try_again(i)
             
-    log_name = server
-    print(f"Log Name: {log_name}")
-    #Centralized logging in ubuntu.log file
-    logging.basicConfig(level=logging.DEBUG, filename=f"{log_name}.log", 
-        filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
+
+#apparently nothing wants to work :[
+def try_again(library):
+    print("trying to install library again")
+    subprocess.run(["sudo", "apt-get", "update"])
+    subprocess.run(["sudo", "apt-get", "--fix-missing-install"])
+    try:
+        subprocess.run(["sudo", "apt-get", "install", library, "-y"])
+        print("Installation Successful")
+
+    #If things go wrong twice run the 3 subprocesses above via CLI
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Failed to install Library{library} TWICE")
+        print(f"Error: Installation Failed twice with exit code: {e.returncode}")
+        sys.exit()
+
 
 def act_III():
     #run nftables based on loaded configuration file
@@ -71,6 +95,8 @@ def act_III():
     #reloading changes based on conf table
     subprocess.run(["sudo", "nft", "-f", "nftables.conf"])
 
+    logging.debug("nftables service started and enabled")
+
 def act_II():
     #create python environment to prevent any dependency issues
     #side note: this is optional. not all linux machines have undependable python libraries
@@ -79,9 +105,12 @@ def act_II():
     subprocess.run(["sudo", "python3", "-m", "venv", venv_dir])
     python_executable = f"{venv_dir}/bin/python3"
     pip_dir = f"{venv_dir}/bin/pip"
-    subprocess.run(["sudo", "chown", "-R", "chris:chris", venv_dir])
+    new_owner = f"{admin}:{admin}"
+    subprocess.run(["sudo", "chown", "-R", new_owner, venv_dir])
     subprocess.run(["sudo", "mkdir", "-p", "wheels"])
-    subprocess.run(["sudo", "chown", "-R", "chris:chris", "wheels"])
+    subprocess.run(["sudo", "chown", "-R", new_owner, "wheels"])
+
+    logging.debug(f"python environment: {venv_dir} created")
 
     #installing python dependencies
     print("installing python dependencies")
@@ -97,16 +126,21 @@ def act_II():
         "--find-links=wheels", "mariadb[binary]"])
     time.sleep(0.1)
 
+    logging.debug(f"python depenencies installed")
+
 
     #activate mariadb
     subprocess.run(["sudo", "systemctl", "enable", "mariadb"])
     subprocess.run(["sudo", "systemctl", "start", "mariadb"])
     location = os.path.join(os.getcwd(), "ccdc_venv", "bin", "python3")
+
+    logging.debug("Mariadb service started")
+
     shebang = f"#!{location}"
     print(f"shebang: {shebang}")
     subprocess.run(["sudo", "sed", "-i", f"1i {shebang}", "firewall"])
     subprocess.run(["sudo", "cp", "firewall", "/usr/local/bin/firewall"])
-    subprocess.run(["sudo", "chmod", "755", "/usr/local/bin/firewall"])
+    subprocess.run(["sudo", "chmod", "700", "/usr/local/bin/firewall"])
 
     #initiate greyrose database
     #subprocess.run(["sudo", "mysql", "-u", "root", "-ppassword", "<", "connectors.sql"])
@@ -117,7 +151,9 @@ def act_II():
             capture_output=True,
             text=True
         )
-    
+
+    logging.debug("Mariadb .sql database initiated")
+
     #create service
     new_location = f's|^ExecStart=.*|ExecStart={python_executable}| /usr/loca/bin/tracker.py'
     subprocess.run(["sudo", "sed", "-i", new_location, "Greyrose.service"])
@@ -127,6 +163,8 @@ def act_II():
     subprocess.run(["sudo", "systemctl", "daemon-reload"])
     subprocess.run(["sudo", "systemctl", "enable", "Greyrose.service"])
     subprocess.run(["sudo", "systemctl", "start", "Greyrose.service"])
+
+    logging.debug("Greyrose Service started and enabled")
 
 def act_IV():
     #get splunk forwarder off the internet
@@ -156,6 +194,7 @@ def act_IV():
     subprocess.run(["/opt/splunkforwarder/bin/splunk", "enable", "boot-start"])
     logging.debug("Added new monitors to splunk")
 
+
 def epilogue():
     #change the permission of every file in the directory
     print("Applying permissions...")
@@ -166,12 +205,54 @@ def epilogue():
 
     #Add firewall to sbin
     print("Adding firewall command")
-    subprocess.run(["sudo", "chown", "chris:chris", "/usr/local/bin/firewall"])
+    new_owner = f"{admin}:{admin}"
+    subprocess.run(["sudo", "chown", new_owner, "/usr/local/bin/firewall"])
     subprocess.run(["sudo", "chmod", "700", "/usr/local/bin/firewall"])
     logging.debug("Firewall command set")
 
     #move quarentine to root directory
     subprocess.run(["mv", "quarantine", "/root/quarantine"])
+
+def final_check():
+    print("Final Check....")
+    #check for correct permissions
+    locations = ["connectors.sql", "firewall", "Greyrose.service", "nftables.conf",
+                 "setup.py", "tracker.py", "wheels", "ccdc_venv", "ubuntu.log"]
+    owner = f"{admin}:{admin}"
+    for i in locations:
+        subprocess.run(["sudo", "chown",  owner, i])
+        subprocess.run(["sudo", "chmod", "700", i])
+    subprocess.run(["sudo", "chmod", "-R", "700"])
+
+    #check for mariadb service started
+    result = subprocess.run(["sudo", "systemctl", "is-active", "mariadb.service"], capture_output=True, text=True)
+    if result == "inactive":
+        print("ERROR: mariadb.service is inactive")
+        logging.warning("mariadb service is inactive")
+
+    #check if nftables service started
+    result = subprocess.run(["sudo", "systemctl", "is-active", "nftables.service"], capture_output=True, text=True)
+    if result == "inactive":
+        print("ERROR: nftables.service is inactive")
+        logging.warning("nftables service is inactive")
+
+    #check for greyrose service started
+    result = subprocess.run(["sudo", "systemctl", "is-active", "Greyrose.service"], capture_output=True, text=True)
+    if result == "inactive":
+        print("ERROR: Greyrose.service is inactive")
+        logging.warning("Greyrose service is inactive")
+
+    #check if splunk exist
+    print("Checking if splunk forwarder is addded")
+    splunk_path = ("/opt/splunkforwarder/bin/splunk")
+    if splunk_path.is_file():
+        print("Splunk Pathway exists")
+        logging.warning("Splunk Pathway exist")
+    else:
+        print("Splunk Pathway does not exist")
+        logging.warning("Splunk Pathway does not exist")
+    #check if my sanity still exist
+
 
 act_I()
 act_II()
