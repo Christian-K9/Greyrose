@@ -27,21 +27,19 @@ def act_I():
     #installing necessary libraries
     #putting a 0.1 second gap between each one so processes don't conflict
     time.sleep(0.1)
-    libraries = ["libmariadb-dev", "python3-dev", "build-essesntials",
+    libraries = ["libmariadb-dev", "python3-dev", "build-essential",
                  "python3-venv", "python3-pip", "mariadb-server", "mariadb-client"]
     for i in libraries:
         command = ["sudo", "apt-get", "install", i, "-y"]
         try:
-            result = subprocess.run(command, check=True, capture_output=True, text=True)
+            result = subprocess.run(["sudo", "apt-get", "install", "-y"] + libraries, check=True,)
             time.sleep(0.1)
 
             print("Installation Sucessful!")
-            print(result.stdout)
 
         except subprocess.CalledProcessError as e:
             print(f"Installation failed with exit code: {e.returncode}")
             print("--- Error Details ---")
-            print(e.stderr)
             sys.exit()
             
     log_name = server
