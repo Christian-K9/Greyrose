@@ -116,6 +116,8 @@ def add_port():
     string_arg = f'/# END: ACCEPTED INSIDE PORT CONNECTION/i \\\t{connection_type} {transmission_value} {port_number} accept'
     subprocess.run(["sudo", "sed", "-i",
         string_arg, "nftables.conf"])
+    keyword = f'{connection_type} {transmission_value} {port_number} drop'
+    subprocess.run(["sudo", "sed", "-i", f"/{keyword}/d, "nftables.conf"])
     add_to_db("accepted_ports", port_number, "port")
 
 #function to remove port
@@ -127,9 +129,11 @@ def remove_port():
     if port_number in accepted_ports:
         remove_from_db("accepted_ports", port_number, "port")
     connection_type,transmission_value = check_additional_requirements()
-    string_arg = f'/# END: DENIED INSIDE PORT CONNECTIONS/i \\\t{connection_type} {transmission_value} {port_number} deny'
+    string_arg = f'/# END: DENIED INSIDE PORT CONNECTIONS/i \\\t{connection_type} {transmission_value} {port_number} drop'
     subprocess.run(["sudo", "sed", "-i",
         string_arg, "nftables.conf"])
+    keyword = f'{connection_type} {transmission_value} {port_number} accept'
+    subprocess.run(["sudo", "sed", "-i", f"/{keyword}/d, "nftables.conf"])
     add_to_db("blocked_ports", port_number, "port")
 
 #function to add ip address
@@ -144,9 +148,11 @@ def add_ip():
         print("must be a valid ip address")
         return
     connection_type,transmission_value = check_additional_requirements()
-    string_arg = f'/# END: ACCEPTED IP CONNECTIONS/i \\\t {ip_address}'
+    string_arg = f'/# END: ACCEPTED IP CONNECTIONS/i \\\t {ip_address},'
     subprocess.run(["sudo", "sed", "-i",
         string_arg, "nftables.conf"])
+    keyword = f'{ip_address},'
+    subprocess.run(["sudo", "sed", "-i", f"/{keyword}/d, "nftables.conf"])
     add_to_db("whitelist", ip_address, "ip")
 
 #function to add remove ip_address
@@ -161,9 +167,11 @@ def remove_ip():
         print("must be a valid ip address")
         return
     connection_type,transmission_value = check_additional_requirements()
-    string_arg = f'/# END: BLOCKED IP CONNECTIONS/i \\\t{ip_address}'
+    string_arg = f'/# END: BLOCKED IP CONNECTIONS/i \\\t{ip_address},'
     subprocess.run(["sudo", "sed", "-i",
         string_arg, "nftables.conf"])
+    keyword = f'{ip_address},'
+    subprocess.run(["sudo", "sed", "-i", f"/{keyword}/d, "nftables.conf"])
     add_to_db("blacklist", ip_address, "ip")
 
 #function to add remove users
