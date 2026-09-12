@@ -234,15 +234,16 @@ def act_IV():
 
     #start splunk forwarder
     #side note: Splunk will prompt you for an administrator username
+    authentication = f"{username}:{password}"
+    subprocess.run(["sudo", "/opt/splunkforwarder/bin/splunk", "login", "-auth", authentication])
     print("Starting Splunk...")
-    subprocess.run(["sudo", "/opt/splunkforwarder/bin/splunk", "start", "--accept-license", "-auth", username, password])
+    subprocess.run(["sudo", "/opt/splunkforwarder/bin/splunk", "start", "--accept-license"])
     logging.debug("Started Splunk")
     forward_server = f"{splunk}:{splunk_port}"
     
     #add monitors
     print("Adding Monitors...")
-    subprocess.run(["/opt/splunkforwarder/bin/splunk", "add", "forward-server", "forward_server", forward_server],
-                   "-auth", username, password)
+    subprocess.run(["/opt/splunkforwarder/bin/splunk", "add", "forward-server", "forward_server", forward_server])
     subprocess.run(["/opt/splunkforwarder/bin/splunk", "add", "monitor", "/var/log"])
     subprocess.run(["/opt/splunkforwarder/bin/splunk", "add", "monitor", "/etc/crontab"])
     subprocess.run(["/opt/splunkforwarder/bin/splunk", "add", "monitor", "/etc/passwd"])
