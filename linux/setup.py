@@ -155,26 +155,23 @@ def act_II():
         f"password={password}\n"
     ]
 
+    #add last few lines to file
     with open("db.conf", "a") as file:
         file.writelines(lines)
-    filename = "connectors.sql"
 
+
+    filename = "connectors.sql"
+    replacements = {"--greyrose_user\n": f"CREATE USER IF NOT EXIST '{username}'@'localhost' IDENTIFIED BY '{password}';\n",
+               "--granted_privileges\n": f"GRANT ALL PRIVILEGES ON Greyrose_DB.* TO '{username}'@'localhost';\n"}
+    
     #read the file
     with open(filename, "r") as f:
         content = f.read()
 
-        #perform exact string replacements
-        #replaces the username string
-        content = content.replace(
-            "--greyrose_user username", 
-            f"CREATE USER IF NOT EXISTS '{username}'@'localhost' IDENTIFIED BY '{password}';"
-    )
+    for old_line, new_line in replacements.items():
+        content = content.replace(old_line, new_line)
 
-    old_grant_block = """GRANT ALL PRIVILEGES ON Greyrose_DB.* \n--granted_privileges"""
-    new_grant_block = f"GRANT ALL PRIVILEGES ON Greyrose_DB.* TO '{username}'@'localhost';\n--granted_privileges"
-
-    content = content.replace(old_grant_block, new_grant_block)
-
+    #update everything
     with open(filename, "w") as f:
         f.write(content)
 
