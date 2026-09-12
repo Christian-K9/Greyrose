@@ -155,6 +155,8 @@ def act_II():
         f"password={password}\n"
     ]
 
+    with open("db.conf", "a") as file:
+        file.writelines(lines)
     filename = "connectors.sql"
 
     #read the file
