@@ -5,6 +5,7 @@ import mariadb
 import sys
 import ipaddress
 import re
+from pathlib import Path
 
 def is_valid_ip(ip_str):
     try:
@@ -13,11 +14,24 @@ def is_valid_ip(ip_str):
     except ValueError:
         return False
 
+
+config = {}
+
+for line in Path("db.conf").read_text().splitlines():
+    line in line.strip()
+
+    key, value = line.split('=', 1)
+    config[key.strip()] = value.strip()
+
+    database_name = config["databasename"]
+    username = config["username"]
+    password = config["password"]
+
 #connect with the mariadb database
 try:
     conn = mariadb.connect(
-        user="greyrose_user",
-        password="password",
+        user=username,
+        password=password,
         host="127.0.0.1",
         port=3306,
         database="Greyrose_DB"
