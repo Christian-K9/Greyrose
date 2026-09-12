@@ -20,9 +20,12 @@ config = {}
 for line in Path("db.conf").read_text().splitlines():
     line in line.strip()
 
+    print(f"line: {line}")
     key, value = line.split('=', 1)
     config[key.strip()] = value.strip()
 
+    print(f"config: {config}")
+    
     database_name = config["databasename"]
     username = config["username"]
     password = config["password"]
