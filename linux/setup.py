@@ -170,6 +170,13 @@ def act_II():
 
     for old_line, new_line in replacements.items():
         content = content.replace(old_line, new_line)
+        print(f"replacing {old_line} with {new_line}")
+
+    print("sql content:")
+    print()
+    print()
+    print()
+    print(content)
 
     #update everything
     with open(filename, "w") as f:
