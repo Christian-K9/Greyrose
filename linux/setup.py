@@ -34,8 +34,7 @@ result = subprocess.run(["hostnamectl"], capture_output=True, text=True)
 pattern = r"Operating System: (.+)"
 match = re.search(pattern, result.stdout)
 if match:
-    log_name = match.group(1).strip()
-    
+    log_name = match.group(1).split()[0]
 else:
     print("Opearting system field not found in hostnamectl")
     log_name = "linux"
