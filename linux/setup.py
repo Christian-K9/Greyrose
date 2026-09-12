@@ -156,24 +156,27 @@ def act_II():
         f"username={username}\n",
         f"password={password}\n"
     ]
-    with open("db.conf", "a") as file:
-        file.writelines(lines)
 
-    create_user = f"/--greyrose_user username/c \\CREATE USER IF NOT EXISTS '{username}'@'localhost' IDENTIFIED BY '{password}';"
+    filename = "connectors.sql"
 
-    # This statement took a whole 10 minutes to make btw
-    grant_privileges = f"/GRANT ALL PRIVILEGES ON/,/--granted_privileges/c \\GRANT ALL PRIVILEGES ON Greyrose_DB.* TO '{username}'@'localhost';\\n--granted_privileges"
+    #read the file
+    with open(filename, "r") as f:
+        content = f.read()
 
-    # Run the subprocesses safely
-    subprocess.run(
-        ["sudo", "sed", "-i", create_user, "connectors.sql"],
-        check=True
+        #perform exact string replacements
+        #replaces the username string
+        content = content.replace(
+            "--greyrose_user username", 
+            f"CREATE USER IF NOT EXISTS '{username}'@'localhost' IDENTIFIED BY '{password}';"
     )
 
-    subprocess.run(
-        ["sudo", "sed", "-i", grant_privileges, "connectors.sql"],
-        check=True
-    )
+    old_grant_block = """GRANT ALL PRIVILEGES ON Greyrose_DB.* \n--granted_privileges"""
+    new_grant_block = f"GRANT ALL PRIVILEGES ON Greyrose_DB.* TO '{username}'@'localhost';\n--granted_privileges"
+
+    content = content.replace(old_grant_block, new_grant_block)
+
+    with open(filename, "w") as f:
+        f.write(content)
 
     shebang = f"#!{location}"
     print(f"shebang: {shebang}")
