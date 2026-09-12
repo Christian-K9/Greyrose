@@ -161,26 +161,15 @@ def act_II():
 
 
     filename = "connectors.sql"
-    replacements = {"--greyrose_user\n": f"CREATE USER IF NOT EXISTS '{username}'@'localhost' IDENTIFIED BY '{password}';\n",
-               "--granted_privileges\n": f"GRANT ALL PRIVILEGES ON Greyrose_DB.* TO '{username}'@'localhost';\n"}
+    replacements = {"--greyrose_user": f"CREATE USER IF NOT EXISTS '{username}'@'localhost' IDENTIFIED BY '{password}';\n",
+               "--granted_privileges": f"GRANT ALL PRIVILEGES ON Greyrose_DB.* TO '{username}'@'localhost';\n"}
     
     #read the file
     with open(filename, "r") as f:
         content = f.read()
 
     for old_line, new_line in replacements.items():
-        if old_line not in content:
-            print()
-            print(f"old line: {old_line} not found")
-            print()
         updated_content = content.replace(old_line, new_line)
-        print(f"replacing {old_line} with {new_line}")
-
-    print("sql content:")
-    print()
-    print()
-    print()
-    print(updated_content)
 
     #update everything
     with open(filename, "w") as f:
