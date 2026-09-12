@@ -26,7 +26,7 @@ while server not in machines:
     if server.lower() not in machines:
         print("Not Valid Operating System Name")
 
-username = input("Enter Database Username (Can be sysadmin):")
+username = input("Enter Database Username (Can be sysadmin): ")
 password = getpass.getpass("Enter Database Password: ")
 
 #get name of operating system via hostnamectl
@@ -252,9 +252,8 @@ def final_check():
     locations = ["connectors.sql", "firewall", "Greyrose.service", "nftables.conf",
                  "setup.py", "tracker.py", "wheels", "ccdc_venv", "ubuntu.log"]
     for i in locations:
-        subprocess.run(["sudo", "chown",  new_owner, i])
+        subprocess.run(["sudo", "chown",  "-R", new_owner, i])
         subprocess.run(["sudo", "chmod", "700", i])
-        subprocess.run(["sudo", "chmod", "-R", "700"])
 
     #check for mariadb service started
     result = subprocess.run(["sudo", "systemctl", "is-active", "mariadb.service"], capture_output=True, text=True)
