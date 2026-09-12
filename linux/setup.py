@@ -162,6 +162,7 @@ def act_II():
     create_password = f'/--END: greyrose_user password/i \\\tIDENTIFIED BY {password};'
     grant_privileges = f"/--END: granted_privileges/i \\\tTO '{username}'@'localhost';"
 
+    print("adding username to conf file")
     subprocess.run(["sudo", "sed", "-i",
             create_user, "db.conf"])
     subprocess.run(["sudo", "sed", "-i",
