@@ -4,6 +4,7 @@ import logging
 import mariadb
 import sys
 import ipaddress
+import re
 
 def is_valid_ip(ip_str):
     try:
@@ -67,9 +68,20 @@ def fetch():
     cursor.execute("SELECT ip FROM blacklist")
     blacklist = [row[0] for row in cursor.fetchall()]
 
-#Centralized logging in ubuntu.log file
-#logging.basicConfig(level=logging.DEBUG, filename=ubuntu.log, 
-#    filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
+#get name of operating system via hostnamectl
+result = subprocess.run(["hostnamectl"], capture_output=True, text=True)
+pattern = r"Operating System: (.+)"
+match = re.search(pattern, result.stdout)
+if match:
+    log_name = match.group(1).strip()
+    
+else:
+    print("Opearting system field not found in hostnamectl")
+    log_name = "linux"
+
+#Centralized logging in linux .log file
+logging.basicConfig(level=logging.DEBUG, filename=f"{log_name}.log", 
+        filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
 
 #function to reload table after configuration file change
 def reload():
@@ -118,6 +130,9 @@ def add_port():
         string_arg, "nftables.conf"])
     keyword = f'{connection_type} {transmission_value} {port_number} drop'
     subprocess.run(["sudo", "sed", "-i", f"/{keyword}/d", "nftables.conf"])
+    print(f"Adding port {port_number} via {connection_type} onto {transmission_value}")
+    logging.info(f"Port: {port_number} was added via {connection_type} onto {transmission_value}")
+    logging.info(f"Port: {port_number} added onto whitelist, removed from whitelist")
     add_to_db("accepted_ports", port_number, "port")
 
 #function to remove port
@@ -134,6 +149,9 @@ def remove_port():
         string_arg, "nftables.conf"])
     keyword = f'{connection_type} {transmission_value} {port_number} accept'
     subprocess.run(["sudo", "sed", "-i", f"/{keyword}/d", "nftables.conf"])
+    print(f"Removing {port_number} via {connection_type} onto {transmission_value}")
+    logging.info(f"Port: {port_number} was removed via {connection_type} onto {transmission_value}")
+    logging.info(f"Port: {port_number} was added onto blacklist, removed from whitelist")
     add_to_db("blocked_ports", port_number, "port")
 
 #function to add ip address
@@ -153,6 +171,8 @@ def add_ip():
         string_arg, "nftables.conf"])
     keyword = f'{ip_address},'
     subprocess.run(["sudo", "sed", "-i", f"/{keyword}/d", "nftables.conf"])
+    print(f"Adding {ip_address} to whitelist")
+    logging.info(f"ip address {ip_address} was added onto whitelist")
     add_to_db("whitelist", ip_address, "ip")
 
 #function to add remove ip_address
@@ -172,6 +192,8 @@ def remove_ip():
         string_arg, "nftables.conf"])
     keyword = f'{ip_address},'
     subprocess.run(["sudo", "sed", "-i", f"/{keyword}/d", "nftables.conf"])
+    print(f"Adding {ip_address} to blacklist")
+    logging.info(f"ip address {ip_address} was added to blacklist")
     add_to_db("blacklist", ip_address, "ip")
 
 #function to add remove users
@@ -182,6 +204,8 @@ def add_user():
         return
     if user in blocked_users:
         remove_from_db("blocked_users", user, "name")
+    print(f"Adding user {user}")
+    logging.info(f"User {user} was added")
     add_to_db("allowed_users", user, "name")
 
 #function to remove users
@@ -192,6 +216,8 @@ def remove_user():
         return
     if user in allowed_users:
         remove_from_db("allowed_users", user, "name")
+    print(f"Removing user {user}")
+    logging.info(f"User {user} was removed")
     add_to_db("blocked_users", user, "name")
 
 #function to add service
@@ -202,6 +228,8 @@ def add_service():
         return
     if service in blocked_services:
         remove_from_db("blocked_services", service, "name")
+    print(f"Adding service {service}")
+    logging.info(f"Service {service} was added")
     add_to_db("allowed_services", service, "name")
 
 #function to remove service
@@ -212,7 +240,26 @@ def remove_service():
         return
     if service in allowed_services:
         remove_from_db("allowed_services", service, "name")
+    print(f"Removing service {service}")
+    logging.info(f"Service {service} was removed")
     add_to_db("blocked_services", service, "name")
+
+def display():
+    print()
+    print(f"accepted ports: {accepted_ports}")
+    print(f"blocked_ports: {blocked_ports}")
+    print(f"allowed_services: {allowed_services}")
+    print(f"blocked_services: {blocked_services}")
+    print(f"allowed_users: {allowed_users}")
+    print(f"blocked_users: {blocked_users}")
+    print(f"whitelist: {whitelist}")
+    print(f"blacklist: {blacklist}")
+    check = input()
+
+    
+def exit():
+    sys.exit("Interface Exit")
+
 
 #interactive interface for administrator
 def interface():
@@ -220,7 +267,8 @@ def interface():
         functions = ["0. allow port through network", "1. blocked port",
                     "2. allow service to run on network", "3. block service",
                     "4. add ip to whitelist", "5. add ip to blacklist",
-                    "6. allow new user on network", "7. block user on network"]
+                    "6. allow new user on network", "7. block user on network",
+                    "8. display", "9. exit"]
 
         for i in functions:
             print(i)
@@ -230,7 +278,8 @@ def interface():
         functions = [add_port, remove_port,
                     add_service, remove_service,
                     add_ip, remove_ip,
-                    add_user, remove_user]
+                    add_user, remove_user,
+                    display, exit]
 
         if (choice < 0) or (choice > 7):
             print("not a function")

@@ -4,6 +4,8 @@ import os
 import time
 import sys
 from pathlib import Path
+import re
+import getpass
 
 #assign splunk forwarder based on machine
 forwarders = {"debian": "https://download.splunk.com/products/universalforwarder/releases/10.0.3/linux/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.deb",
@@ -24,14 +26,25 @@ while server not in machines:
     if server.lower() not in machines:
         print("Not Valid Operating System Name")
 
+username = input("Enter Database Username (Can be sysadmin):")
+password = getpass.getpass("Enter Database Password: ")
+
 #get name of operating system via hostnamectl
-operating_system = f"hostnamectl | grep -oP 'Operating System:\\s+\\K\\S+'"
-log_name = subprocess.run(operating_system, shell=True, capture_output=True, text=True)
+result = subprocess.run(["hostnamectl"], capture_output=True, text=True)
+pattern = r"Operating System: (.+)"
+match = re.search(pattern, result.stdout)
+if match:
+    log_name = match.group(1).strip()
+    
+else:
+    print("Opearting system field not found in hostnamectl")
+    log_name = "linux"
+
 #Centralized logging in linux .log file
 logging.basicConfig(level=logging.DEBUG, filename=f"{log_name}.log", 
         filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
 
-admin = input("Name of administrator (Default name is sysadmin): ")
+new_owner = "root:root"
 
 def act_I():
     #installing necessary libraries
@@ -57,6 +70,7 @@ def act_I():
             print("--- Error Details ---")
             logging.warning(f"Failed to install Library {i}")
             try_again(i)
+
             
 
 #apparently nothing wants to work :[
@@ -67,6 +81,7 @@ def try_again(library):
     try:
         subprocess.run(["sudo", "apt-get", "install", library, "-y"])
         print("Installation Successful")
+        logging.info(f"reattempt to install {library} successful")
 
     #If things go wrong twice run the 3 subprocesses above via CLI
     except subprocess.CalledProcessError as e:
@@ -105,7 +120,6 @@ def act_II():
     subprocess.run(["sudo", "python3", "-m", "venv", venv_dir])
     python_executable = f"{venv_dir}/bin/python3"
     pip_dir = f"{venv_dir}/bin/pip"
-    new_owner = f"{admin}:{admin}"
     subprocess.run(["sudo", "chown", "-R", new_owner, venv_dir])
     subprocess.run(["sudo", "mkdir", "-p", "wheels"])
     subprocess.run(["sudo", "chown", "-R", new_owner, "wheels"])
@@ -136,6 +150,26 @@ def act_II():
 
     logging.debug("Mariadb service started")
 
+    lines = [
+        "databasename=Greyrose_DB",
+        f"username={username}",
+        f"password={password}"
+    ]
+
+    with open("db.conf", "a") as file:
+        file.writelines(lines)
+
+    create_user = f"/--END: greyrose_user username/i \\\tCREATE USER IF NOT EXISTS '{username}'@'localhost';"
+    create_password = f'/--END: greyrose_user password/i \\\tIDENTIFIED BY {password};'
+    grant_privileges = f"/--END: granted_privileges/i \\\tTO '{username}'@'localhost';"
+
+    subprocess.run(["sudo", "sed", "-i",
+            create_user, "db.conf"])
+    subprocess.run(["sudo", "sed", "-i",
+                create_password, "db.conf"])
+    subprocess.run(["sudo", "sed", "-i",
+                grant_privileges, "db.conf"])
+    
     shebang = f"#!{location}"
     print(f"shebang: {shebang}")
     subprocess.run(["sudo", "sed", "-i", f"1i {shebang}", "firewall"])
@@ -143,7 +177,6 @@ def act_II():
     subprocess.run(["sudo", "chmod", "700", "/usr/local/bin/firewall"])
 
     #initiate greyrose database
-    #subprocess.run(["sudo", "mysql", "-u", "root", "-ppassword", "<", "connectors.sql"])
     with open("connectors.sql", "r") as sql_file:
         result = subprocess.run(
             ["sudo", "mariadb", "-u", "root"],
@@ -165,6 +198,7 @@ def act_II():
     subprocess.run(["sudo", "systemctl", "start", "Greyrose.service"])
 
     logging.debug("Greyrose Service started and enabled")
+
 
 def act_IV():
     #get splunk forwarder off the internet
@@ -205,7 +239,6 @@ def epilogue():
 
     #Add firewall to sbin
     print("Adding firewall command")
-    new_owner = f"{admin}:{admin}"
     subprocess.run(["sudo", "chown", new_owner, "/usr/local/bin/firewall"])
     subprocess.run(["sudo", "chmod", "700", "/usr/local/bin/firewall"])
     logging.debug("Firewall command set")
@@ -218,11 +251,10 @@ def final_check():
     #check for correct permissions
     locations = ["connectors.sql", "firewall", "Greyrose.service", "nftables.conf",
                  "setup.py", "tracker.py", "wheels", "ccdc_venv", "ubuntu.log"]
-    owner = f"{admin}:{admin}"
     for i in locations:
-        subprocess.run(["sudo", "chown",  owner, i])
+        subprocess.run(["sudo", "chown",  new_owner, i])
         subprocess.run(["sudo", "chmod", "700", i])
-    subprocess.run(["sudo", "chmod", "-R", "700"])
+        subprocess.run(["sudo", "chmod", "-R", "700"])
 
     #check for mariadb service started
     result = subprocess.run(["sudo", "systemctl", "is-active", "mariadb.service"], capture_output=True, text=True)
@@ -258,3 +290,5 @@ act_I()
 act_II()
 act_III()
 act_IV()
+epilogue()
+final_check()

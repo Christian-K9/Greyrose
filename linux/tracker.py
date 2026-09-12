@@ -8,18 +8,49 @@ import subprocess
 import re
 from xml.dom.minicompat import StringTypes
 import mariadb
+import signal
+from pathlib import Path
 
+#get name of operating system via hostnamectl
+result = subprocess.run(["hostnamectl"], capture_output=True, text=True)
+pattern = r"Operating System: (.+)"
+match = re.search(pattern, result.stdout)
+if match:
+    log_name = match.group(1).strip()
+    
+else:
+    print("Opearting system field not found in hostnamectl")
+    log_name = "linux"
+
+#Centralized logging in linux .log file
+logging.basicConfig(level=logging.DEBUG, filename=f"{log_name}.log", 
+        filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
+
+
+#read lines from db.conf file
+config = {}
+
+for line in Path("db.conf").read_text().splitlines():
+    line in line.strip()
+
+    key, value = line.split('=', 1)
+    config[key.strip()] = value.strip()
+
+database_name = config["databasename"]
+username = config["username"]
+password = config["password"]
 #connect with the mariadb database
 try:
     conn = mariadb.connect(
-        user="greyrose_user",
-        password="password",
+        user=username,
+        password=password,
         host="localhost",
         port=3306,
         database="Greyrose_DB"
     )
 except mariadb.Error as e:
     print(f"error connecting to MariaDB: {e}")
+    logging.error("Problem connecting to MariaDB:")
     sys.exit(1)
 
 cursor = conn.cursor()
@@ -37,30 +68,39 @@ blocked_services = []
 reverseShellFlags = [r"python3?\s+-c\b", r"/bin/(ba)?sh\s+-i\b", r"nc\s+.*-e\b", r"ncat\s+.*-e\b", r"socat\s+.*EXEC\b"]
 
 def fetch():
+    global accepted_ports
+    global blocked_ports
+    global allowed_users
+    global blocked_users
+    global whitelist
+    global blacklist
+    global allowed_services
+    global blocked_services
+
     #use sql to fetch whitelist, and blacklist
     cursor.execute("SELECT port FROM accepted_ports")
-    accepted_ports = [row for row in cursor.fetchall()]
+    accepted_ports = [row[0] for row in cursor.fetchall()]
 
     cursor.execute("SELECT port FROM blocked_ports")
-    blocked_ports = [row for row in cursor.fetchall()]
+    blocked_ports = [row[0] for row in cursor.fetchall()]
 
     cursor.execute("SELECT name FROM allowed_services")
-    allowed_services = [row for row in cursor.fetchall()]
+    allowed_services = [row[0] for row in cursor.fetchall()]
 
     cursor.execute("SELECT name FROM blocked_services")
-    blocked_services = [row for row in cursor.fetchall()]
+    blocked_services = [row[0] for row in cursor.fetchall()]
 
     cursor.execute("SELECT name FROM allowed_users")
-    allowed_users = [row for row in cursor.fetchall()]
+    allowed_users = [row[0] for row in cursor.fetchall()]
 
     cursor.execute("SELECT name FROM blocked_users")
-    blocked_users = [row for row in cursor.fetchall()]
+    blocked_users = [row[0] for row in cursor.fetchall()]
 
     cursor.execute("SELECT ip FROM whitelist")
-    whitelist = [row for row in cursor.fetchall()]
+    whitelist = [row[0] for row in cursor.fetchall()]
 
     cursor.execute("SELECT ip FROM blacklist")
-    blacklist = [row for row in cursor.fetchall()]
+    blacklist = [row[0] for row in cursor.fetchall()]
 
 #Rules for users
 #   1. no suspicious user names
@@ -77,11 +117,11 @@ def checkUsers():
         group_id = userSplit[3]
         if (username not in allowed_users):
             if (username in blocked_users) or ((user_id == '0') or (group_id == '0')):
-                #os.system("userdel " + username)
-                subprocess.run(["sudo", "userdel", username])
+                os.system("userdel " + username)
             elif (int(user_id) >= 1000):
-                #os.system("userdel " + userSplit[0])
-                subprocess.run(["sudo", "userdel", userSplit[0]])
+                os.system("userdel " + userSplit[0])
+            logging.error(f"User {username} found on machine with unusual id")
+            logging.info(f"User {username} removed from machine")
 
 # Checks Processes that are flagged for being a potentially reverse shell
 def checkProcesses():
@@ -93,6 +133,8 @@ def checkProcesses():
                 processConts = process.split()
                 pid = processConts[1]
                 os.kill(int(pid), signal.SIGKILL)
+                logging.error(f"Process with PID {pid} found on machine")
+                logging.info(f"Process with PID {pid} killed on machine")
 
 # Checks For ips that are not allowed by root
 def checkIPs():
@@ -109,6 +151,7 @@ def checkIPs():
                 date = connection[2]
                 time = connection[3]
                 remoteIP = connection[4]
+                logging.error(f"ip address {ipSplit} was found and flagged")
 
 # Checks for any additions to the crontab
 def checkCrontab():
@@ -121,6 +164,8 @@ def checkCrontab():
             #f.write("\n")
             #f.close()
             subprocess.run(["sudo", "truncate", "-s", "0", "/etc/crontab"])
+            logging.error(f"contents of /etc/crontab were not empty")
+            logging.info(f"contents of /etc/crontab removed")
 
 # Checks for Services that are not allowed
 def checkServices():
@@ -132,8 +177,10 @@ def checkServices():
                 serviceName = service.split()[0]
                 os.system("systemctl stop " + serviceName)
                 os.system("systemctl disable " + serviceName)
-                os.system("mv /etc/systemd/system/" + serviceName + " /root/quarantined_services/")
+                os.system("mv /etc/systemd/system/" + serviceName + " /root/quarantine/")
                 os.system("systemctl daemon-reload")
+                logging.error(f"service {serviceName} found and flagged")
+                logging.info(f"service {serviceName} disabled and moved to /root/quarantine")
 
 def getOutputOf(command):
     #Check if the command is a string. If it is, It goes through the shell
@@ -162,12 +209,12 @@ def getOutputOf(command):
         return str(e).strip()
 
 def run():
-    checkUsers()
-    checkIPs()
-    checkProcesses()
-    checkServices()
-    checkCrontab()
-    checkServices()
-    time.sleep(60)
+    while True:
+        checkUsers()
+        checkIPs()
+        checkProcesses()
+        checkServices()
+        checkCrontab()
+        time.sleep(30)
 
 run()

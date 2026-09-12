@@ -1,10 +1,17 @@
 CREATE DATABASE IF NOT EXISTS Greyrose_DB;
 
-CREATE USER IF NOT EXISTS 'greyrose_user'@'localhost'
-IDENTIFIED BY 'password';
+--START: greyrose_user username
+
+--END: greyrose_user username
+
+--START: greyrose_user password
+
+--END: greyrose_user password
 
 GRANT ALL PRIVILEGES ON Greyrose_DB.* 
-TO 'greyrose_user'@'localhost';
+--START: granted_privileges
+
+--END: granted_privileges
 
 FLUSH PRIVILEGES;
 
