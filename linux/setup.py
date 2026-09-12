@@ -26,8 +26,8 @@ while server not in machines:
     if server.lower() not in machines:
         print("Not Valid Operating System Name")
 
-username = input("Enter centralized Username (Can be sysadmin): ")
-password = getpass.getpass("Enter centralized Password: ")
+username = input("Enter Centralized Username (Can be sysadmin): ")
+password = getpass.getpass("Enter Centralized Password: ")
 splunk = input("What Is The Splunk Ip Address?: ")
 splunk_port = input("What is the Splunk Port: ")
 
