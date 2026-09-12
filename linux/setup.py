@@ -154,22 +154,22 @@ def act_II():
         f"username={username}\n",
         f"password={password}\n"
     ]
-
     with open("db.conf", "a") as file:
         file.writelines(lines)
-
     create_user = (
         f"/--END: greyrose_user username/i\\\n"
         f"CREATE USER IF NOT EXISTS '{username}'@'localhost' IDENTIFIED BY '{password}';"
     )
-
     grant_privileges = (
         f"/--END: granted_privileges/i\\\n"
         f"TO '{username}'@'localhost';"
     )
-
-    subprocess.run(["sudo", "sed", "-i", create_user, "db.conf"])
-    subprocess.run(["sudo", "sed", "-i", grant_privileges, "db.conf"])
+    subprocess.run(
+        ["sudo", "sed", "-i", create_user, "connectors.sql"],
+        check=True)
+    subprocess.run(
+        ["sudo", "sed", "-i", grant_privileges, "connectors.sql"],
+        check=True)
 
     shebang = f"#!{location}"
     print(f"shebang: {shebang}")
