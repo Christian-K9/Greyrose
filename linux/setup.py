@@ -203,8 +203,11 @@ def act_IV():
     #get splunk forwarder off the internet
     print("Fetching splunk forwarder off the internet...")
     print(f"Forwarder Name: {forwarders[server]}")
+    time.sleep(0.1)
     subprocess.run(["sudo", "wget", "-O", "/opt/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.deb", forwarders[server]])
+    time.sleep(0.1)
     subprocess.run(["sudo", "dpkg", "-i", "/opt/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.deb"])
+    time.sleep(0.1)
     logging.debug("Fetched splunk forwarder off the internet")
 
     #start splunk forwarder
