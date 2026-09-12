@@ -173,18 +173,18 @@ def act_II():
             print()
             print(f"old line: {old_line} not found")
             print()
-        content = content.replace(old_line, new_line)
+        updated_content = content.replace(old_line, new_line)
         print(f"replacing {old_line} with {new_line}")
 
     print("sql content:")
     print()
     print()
     print()
-    print(content)
+    print(updated_content)
 
     #update everything
     with open(filename, "w") as f:
-        f.write(content)
+        f.write(updated_content)
 
     shebang = f"#!{location}"
     print(f"shebang: {shebang}")
