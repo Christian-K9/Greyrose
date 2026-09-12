@@ -156,6 +156,7 @@ def act_II():
     ]
     with open("db.conf", "a") as file:
         file.writelines(lines)
+
     create_user = (
         f"/--END: greyrose_user username/i\\\n"
         f"CREATE USER IF NOT EXISTS '{username}'@'localhost' IDENTIFIED BY '{password}';"
@@ -178,6 +179,7 @@ def act_II():
     subprocess.run(["sudo", "chmod", "700", "/usr/local/bin/firewall"])
 
     #initiate greyrose database
+    print("RUNNING SQL SCRIPT...")
     with open("connectors.sql", "r") as sql_file:
         result = subprocess.run(
             ["sudo", "mariadb", "-u", "root"],
