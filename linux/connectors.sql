@@ -13,8 +13,6 @@ GRANT ALL PRIVILEGES ON Greyrose_DB.*
 
 --END: granted_privileges
 
-FLUSH PRIVILEGES;
-
 USE Greyrose_DB;
 
 CREATE TABLE IF NOT EXISTS accepted_ports (
