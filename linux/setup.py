@@ -267,7 +267,7 @@ def final_check():
     print("Final Check....")
     #check for correct permissions
     locations = ["connectors.sql", "firewall", "Greyrose.service", "nftables.conf",
-                 "setup.py", "tracker.py", "wheels", "ccdc_venv", "ubuntu.log"]
+                 "setup.py", "tracker.py", "wheels", "ccdc_venv", log_name]
     for i in locations:
         subprocess.run(["sudo", "chown",  "-R", new_owner, i])
         subprocess.run(["sudo", "chmod", "600", i])
