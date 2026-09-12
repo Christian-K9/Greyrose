@@ -199,6 +199,21 @@ def act_II():
     logging.debug("Greyrose Service started and enabled")
 
 
+def run_dpkg():
+    cmd = ["sudo", "dpkg", "-i", "/opt/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.deb"]
+    for i in range(5):
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode == 0:
+            print("Installation successful!")
+            logging.info(f"Installation attempt {i} successful")
+            return True
+        if "lock" in result.stderr or "locked" in result.stderr:
+            print("dpkg is locked by another process. Retrying in 5s")
+            time.sleep(5)
+        else:
+            print("dpkg returned with uknown error")
+            logging.error("dpkg returned with unknown error")
+
 def act_IV():
     #get splunk forwarder off the internet
     print("Fetching splunk forwarder off the internet...")
@@ -206,7 +221,7 @@ def act_IV():
     time.sleep(0.1)
     subprocess.run(["sudo", "wget", "-O", "/opt/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.deb", forwarders[server]])
     time.sleep(0.1)
-    subprocess.run(["sudo", "dpkg", "-i", "/opt/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.deb"])
+    run_dpkg()
     time.sleep(0.1)
     logging.debug("Fetched splunk forwarder off the internet")
 
