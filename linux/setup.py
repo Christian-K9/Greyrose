@@ -28,8 +28,6 @@ while server not in machines:
 
 username = input("Enter Centralized Username (Can be sysadmin): ")
 password = getpass.getpass("Enter Centralized Password: ")
-splunk = input("What Is The Splunk Ip Address?: ")
-splunk_port = input("What is the Splunk Port: ")
 
 #get name of operating system via hostnamectl
 result = subprocess.run(["hostnamectl"], capture_output=True, text=True)
@@ -238,10 +236,11 @@ def act_IV():
     #start splunk forwarder
     #side note: Splunk will prompt you for an administrator username
     authentication = f"{username}:{password}"
-    subprocess.run(["sudo", "/opt/splunkforwarder/bin/splunk", "login", "-auth", authentication])
     print("Starting Splunk...")
     subprocess.run(["sudo", "/opt/splunkforwarder/bin/splunk", "start", "--accept-license"])
     logging.debug("Started Splunk")
+    splunk = input("What Is The Splunk Ip Address?: ")
+    splunk_port = input("What is the Splunk Port: ")
     forward_server = f"{splunk}:{splunk_port}"
     
     #add monitors
