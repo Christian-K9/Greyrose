@@ -157,20 +157,21 @@ def act_II():
     with open("db.conf", "a") as file:
         file.writelines(lines)
 
-    create_user = (
-        f"/--END: greyrose_user username/i\\\n"
-        f"CREATE USER IF NOT EXISTS '{username}'@'localhost' IDENTIFIED BY '{password}';"
-    )
-    grant_privileges = (
-        f"/--END: granted_privileges/i\\\n"
-        f"TO '{username}'@'localhost';"
-    )
+    create_user = f"/--greyrose_user username/c \\CREATE USER IF NOT EXISTS '{username}'@'localhost' IDENTIFIED BY '{password}';"
+
+    # This statement took a whole 10 minutes to make btw
+    grant_privileges = f"/GRANT ALL PRIVILEGES ON/,/--granted_privileges/c \\GRANT ALL PRIVILEGES ON Greyrose_DB.* TO '{username}'@'localhost';\\n--granted_privileges"
+
+    # Run the subprocesses safely
     subprocess.run(
         ["sudo", "sed", "-i", create_user, "connectors.sql"],
-        check=True)
+        check=True
+    )
+
     subprocess.run(
         ["sudo", "sed", "-i", grant_privileges, "connectors.sql"],
-        check=True)
+        check=True
+    )
 
     shebang = f"#!{location}"
     print(f"shebang: {shebang}")

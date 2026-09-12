@@ -4,10 +4,6 @@ CREATE DATABASE IF NOT EXISTS Greyrose_DB;
 
 --END: greyrose_user username
 
---START: greyrose_user password
-
---END: greyrose_user password
-
 GRANT ALL PRIVILEGES ON Greyrose_DB.* 
 --START: granted_privileges
 
