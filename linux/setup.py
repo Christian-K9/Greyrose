@@ -26,8 +26,10 @@ while server not in machines:
     if server.lower() not in machines:
         print("Not Valid Operating System Name")
 
-username = input("Enter Database Username (Can be sysadmin): ")
-password = getpass.getpass("Enter Database Password: ")
+username = input("Enter centralized Username (Can be sysadmin): ")
+password = getpass.getpass("Enter centralized Password: ")
+splunk = input("What Is The Splunk Ip Address?: ")
+splunk_port = input("What is the Splunk Port: ")
 
 #get name of operating system via hostnamectl
 result = subprocess.run(["hostnamectl"], capture_output=True, text=True)
@@ -233,15 +235,14 @@ def act_IV():
     #start splunk forwarder
     #side note: Splunk will prompt you for an administrator username
     print("Starting Splunk...")
-    subprocess.run(["sudo", "/opt/splunkforwarder/bin/splunk", "start", "--accept-license"])
+    subprocess.run(["sudo", "/opt/splunkforwarder/bin/splunk", "start", "--accept-license", "-auth", username, password])
     logging.debug("Started Splunk")
-    splunk = input("What Is The Splunk Ip Address?: ")
-    port = input("What is the Splunk Port: ")
-    forward_server = f"{splunk}:{port}"
+    forward_server = f"{splunk}:{splunk_port}"
     
     #add monitors
     print("Adding Monitors...")
-    subprocess.run(["/opt/splunkforwarder/bin/splunk", "add", "forward-server", "forward_server"])
+    subprocess.run(["/opt/splunkforwarder/bin/splunk", "add", "forward-server", "forward_server", forward_server],
+                   "-auth", username, password)
     subprocess.run(["/opt/splunkforwarder/bin/splunk", "add", "monitor", "/var/log"])
     subprocess.run(["/opt/splunkforwarder/bin/splunk", "add", "monitor", "/etc/crontab"])
     subprocess.run(["/opt/splunkforwarder/bin/splunk", "add", "monitor", "/etc/passwd"])
