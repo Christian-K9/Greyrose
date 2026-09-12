@@ -151,9 +151,9 @@ def act_II():
     logging.debug("Mariadb service started")
 
     lines = [
-        "databasename=Greyrose_DB",
-        f"username={username}",
-        f"password={password}"
+        f"databasename=Greyrose_DB\n",
+        f"username={username}\n",
+        f"password={password}\n"
     ]
 
     with open("db.conf", "a") as file:
@@ -253,7 +253,7 @@ def final_check():
                  "setup.py", "tracker.py", "wheels", "ccdc_venv", "ubuntu.log"]
     for i in locations:
         subprocess.run(["sudo", "chown",  "-R", new_owner, i])
-        subprocess.run(["sudo", "chmod", "700", i])
+        subprocess.run(["sudo", "chmod", "600", i])
 
     #check for mariadb service started
     result = subprocess.run(["sudo", "systemctl", "is-active", "mariadb.service"], capture_output=True, text=True)
@@ -275,7 +275,7 @@ def final_check():
 
     #check if splunk exist
     print("Checking if splunk forwarder is addded")
-    splunk_path = ("/opt/splunkforwarder/bin/splunk")
+    splunk_path = Path("/opt/splunkforwarder/bin/splunk")
     if splunk_path.is_file():
         print("Splunk Pathway exists")
         logging.warning("Splunk Pathway exist")
