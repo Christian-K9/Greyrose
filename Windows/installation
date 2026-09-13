@@ -3,7 +3,7 @@ command to install python on windows from terminal:
 Invoke-WebRequest "https://www.python.org/ftp/python/3.12.2/python-3.12.2-amd64.exe" -OutFile python.exe
 
 command to pull github from terminal
-Invoke-webRequest -Uri "https://raw.githubusercontent.com/Christian-K9/Orthrus/main/Windows/script.py" -Headers @{ "User-Agent" = "Mozilla/5.0" } -OutFile "script.py"
+Invoke-webRequest -Uri "https://raw.githubusercontent.com/Christian-K9/Greyrose/main/Windows/setup.ps1" -Headers @{ "User-Agent" = "Mozilla/5.0" } -OutFile "script.py"
 
 command to run script from terminal
 powershell.exe -ExecutionPolicy Bypass -File .\setup.ps1
