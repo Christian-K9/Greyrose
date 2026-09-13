@@ -304,7 +304,7 @@ def interface():
                     add_user, remove_user,
                     display, exit]
 
-        if (choice < 0) or (choice > 7):
+        if (choice < 0) or (choice > 9):
             print("not a function")
         else:
             functions[choice]()
