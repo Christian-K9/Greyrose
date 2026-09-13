@@ -1,14 +1,9 @@
 CREATE DATABASE IF NOT EXISTS Greyrose_DB;
 
---START: greyrose_user username
-
---END: greyrose_user username
+--greyrose_user
 
 GRANT ALL PRIVILEGES ON Greyrose_DB.* 
---START: granted_privileges
-
---END: granted_privileges
-
+--granted_privileges
 USE Greyrose_DB;
 
 CREATE TABLE IF NOT EXISTS accepted_ports (
