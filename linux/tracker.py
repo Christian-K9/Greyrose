@@ -28,7 +28,7 @@ logging.basicConfig(level=logging.DEBUG, filename=f"{log_name}.log",
 config = {}
 
 for line in Path("db.conf").read_text().splitlines():
-    line in line.strip()
+    line = line.strip()
 
     key, value = line.split('=', 1)
     config[key.strip()] = value.strip()
