@@ -298,7 +298,7 @@ def epilogue():
                 "nftables.conf": "non-script", "setup.py": "script", "tracker.py": "script",
                  "wheels": "non-script", "ccdc_venv": "non-script", f"{log_name}.log": "non-script",
                 "/usr/local/bin/db.conf": "non-script", "/usr/local/bin/firewall": "script",
-                 "/usr/local/bin/tracker.py": "script"}
+                 "/usr/local/bin/tracker.py": "script", "/etc/systemd/system/Greyrose.service": "script"}
     
     for i in locations:
         subprocess.run(["sudo", "chown",  "-R", new_owner, i])
