@@ -168,7 +168,6 @@ def act_II():
     with open(filename, "r") as f:
         content = f.read()
 
-    print(repr(content))
     updated_content = content
 
     for marker, replacement in replacements.items():
