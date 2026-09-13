@@ -113,7 +113,7 @@ def checkUsers():
         user_id = userSplit[2]
         group_id = userSplit[3]
         if (username not in allowed_users):
-            if (username != "root") or (username != "sysadmin") or (username != "splunkfwd"):
+            if username not in ("root", "sysadmin", "splunkfwd"):
                 if (username in blocked_users) or ((user_id == '0') or (group_id == '0')):
                     os.system("userdel " + username)
                     logging.error(f"User {username} found on machine with unusual id")
