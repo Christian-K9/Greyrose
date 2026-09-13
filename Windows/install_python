@@ -5,13 +5,5 @@ Invoke-WebRequest "https://www.python.org/ftp/python/3.12.2/python-3.12.2-amd64.
 command to pull github from terminal
 Invoke-webRequest -Uri "https://raw.githubusercontent.com/Christian-K9/Orthrus/main/Windows/script.py" -Headers @{ "User-Agent" = "Mozilla/5.0" } -OutFile "script.py"
 
-python location:
-C:\Users\Administrator\AppData\Local\Programs\Python\Python312
-
-Invoke-WebRequest -Uri "https://www.snort.org/downloads/snort/snort-2.9.20.tar.gz" -Headers @{ "User-Agent" = "Mozilla/5.0" } -OutFile "script.tar.gz"
-
-Invoke-WebRequest -Uri "https://www.winpcap.org/install/bin/WinPcap_4_1_3.exe" -Headers @{ "User-Agent" = "Mozilla/5.0" } -OutFile "script.py"
-
-Invoke-WebRequest -Uri "https://npcap.com/dist/npcap-1.87.exe" -OufFile "script.exe"
-
-snort -l snort_path -L alerts.log -i <interface>
+command to run script from terminal
+powershell.exe -ExecutionPolicy Bypass -File .\setup.ps1
