@@ -138,6 +138,7 @@ def act_II():
 
     lines = [
         f"databasename=Greyrose_DB\n",
+        f"log_name={log_name}\n",
         f"username={username}\n",
         f"password={password}\n"
     ]
