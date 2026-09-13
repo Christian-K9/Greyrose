@@ -170,8 +170,10 @@ def act_II():
 
     updated_content = content
 
-    for old_line, new_line in replacements.items():
-        updated_content = updated_content.replace(old_line, new_line)
+    for marker, replacement in replacements.items():
+        if marker not in updated_content:
+            print(f"Warning: {marker} not found")
+        updated_content = updated_content.replace(marker, replacement)
 
     #update everything
     with open(filename, "w") as f:
