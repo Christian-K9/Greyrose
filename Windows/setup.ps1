@@ -2,9 +2,10 @@
 
 $forwarder = "splunkforwarder-10.0.1-c486717c322b-windows-x64.msi"
 $url = "https://download.splunk.com/products/universalforwarder/releases/10.0.1/windows/$forwarder"
-$splunkPath = "C:\Program Files\SplunkUniversalForwarder\bin\splunk.exe"
+$installDir = "C:\Program Files\SplunkUniversalForwarder"
+$localConfigDir = "$installDir\etc\system\local"
 
-# ownload & Install Splunk Universal Forwarder
+# --- 1. Download & Install Splunk Universal Forwarder ---
 try {
     Write-Host "Downloading $forwarder..." -ForegroundColor Cyan
     Invoke-WebRequest -Uri $url -OutFile $forwarder -ErrorAction Stop
@@ -17,7 +18,7 @@ catch {
 
 try {
     Write-Host "Launching installer..." -ForegroundColor Cyan
-    # Added AGREETOLICENSE=Yes to prevent error 1603, plus logging (/l*v install.log)
+    # AGREETOLICENSE=Yes is required for quiet installations (/qn)
     $process = Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$forwarder`" AGREETOLICENSE=Yes /qn /norestart /l*v install.log" -Wait -PassThru -ErrorAction Stop
     
     if ($process.ExitCode -ne 0) {
@@ -30,93 +31,92 @@ catch {
     exit
 }
 
-# rompt for User Inputs
+# --- 2. Prompt for Inputs ---
 Write-Host "`n--- Splunk Configuration ---" -ForegroundColor Yellow
 $server = Read-Host "What is the Server IP?"
-$port = Read-Host "What is the Server Receiving Port?"
+$port = Read-Host "What is the Server Receiving Port (e.g., 9997)?"
 $indexer = "$server`:$port"
-
-$username = Read-Host "Splunk Username"
-$securePassword = Read-Host "Enter Splunk Password" -AsSecureString
-# Convert secure string back to plain text for the splunk CLI auth flag
-$password = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($securePassword))
-$login = "$username`:$password"
-
 $hostname = Read-Host "Enter a hostname for this client"
 
-function Invoke-Splunk {
-    param([string[]]$Arguments)
-    & $splunkPath @Arguments
-    if ($LASTEXITCODE -ne 0) {
-        throw "Splunk command failed with exit code $LASTEXITCODE"
-    }
-}
+# --- 3. Write Splunk Configuration Files ---
+try {
+    Write-Host "`nConfiguring Splunk files directly..." -ForegroundColor Cyan
 
-function Set-ClientHostname {
-    $inputsPath = "C:\Program Files\SplunkUniversalForwarder\etc\system\local\server.conf"
-    $configDir = Split-Path $inputsPath -Parent
-    
-    if (!(Test-Path $configDir)) {
-        New-Item -ItemType Directory -Path $configDir -Force | Out-Null
+    if (!(Test-Path $localConfigDir)) {
+        New-Item -ItemType Directory -Path $localConfigDir -Force | Out-Null
     }
 
-    $config = "[general]`nserverName = $hostname`n"
-    Set-Content -Path $inputsPath -Value $config -Encoding UTF8
-    Write-Host "Hostname set to '$hostname' in server.conf" -ForegroundColor Green
-}
+    # server.conf (Hostname)
+    $serverConf = @"
+[general]
+serverName = $hostname
+"@
+    Set-Content -Path "$localConfigDir\server.conf" -Value $serverConf -Encoding UTF8
+    Write-Host "Configured server.conf" -ForegroundColor Green
 
-function Add-ForwardServer {
-    Write-Host "Removing Any Existing Forward-Server..." -ForegroundColor Cyan
-    try { Invoke-Splunk @("remove", "forward-server", $indexer) } catch { Write-Host "No existing forward-server to remove or removal skipped." -ForegroundColor DarkYellow }
-    
-    Write-Host "Adding New Forward-Server..." -ForegroundColor Cyan
-    Invoke-Splunk @("add", "forward-server", $indexer)
-}
+    # outputs.conf (Forwarding Target)
+    $outputsConf = @"
+[tcpout]
+defaultGroup = primary_indexers
 
-function Add-Monitors {
-    # IIS Logs
+[tcpout:primary_indexers]
+server = $indexer
+"@
+    Set-Content -Path "$localConfigDir\outputs.conf" -Value $outputsConf -Encoding UTF8
+    Write-Host "Configured outputs.conf" -ForegroundColor Green
+
+    # inputs.conf (Monitors and Host Override)
+    $inputsConf = @"
+[default]
+host = $hostname
+
+"@
+
+    # IIS Logs Check
     $iisPath = "C:\inetpub\logs\LogFiles\W3SVC1"
     if (Test-Path $iisPath -PathType Container) {
-        Write-Host "Adding IIS logs monitor..." -ForegroundColor Cyan
-        Invoke-Splunk @("add", "monitor", $iisPath, "-index", "main", "-sourcetype", "iis")
+        $inputsConf += @"
+[monitor://$iisPath]
+disabled = false
+index = main
+sourcetype = iis
+
+"@
+        Write-Host "Added IIS log monitor stanza" -ForegroundColor Green
     } else {
-        Write-Host "Error: IIS logs path does not exist" -ForegroundColor Red
-        Start-Sleep -Seconds 3
+        Write-Host "Warning: IIS logs path ($iisPath) not found; skipping IIS monitor." -ForegroundColor DarkYellow
     }
 
-    # Windows Event Logs
+    # Windows Event Logs Check
     $eventPath = "C:\Windows\System32\winevt\Logs"
     if (Test-Path $eventPath -PathType Container) {
-        Write-Host "Adding Windows Event Logs..." -ForegroundColor Cyan
-        Invoke-Splunk @("add", "monitor", "C:\Windows\System32\winevt\Logs\*.evtx", "-index", "main", "-sourcetype", "WinEventLog")
+        $inputsConf += @"
+[monitor://$eventPath\*.evtx]
+disabled = false
+index = main
+sourcetype = WinEventLog
+
+"@
+        Write-Host "Added Windows Event Log monitor stanza" -ForegroundColor Green
     } else {
-        Write-Host "Error: Windows Event Logs directory does not exist" -ForegroundColor Red
-        Start-Sleep -Seconds 3
+        Write-Host "Warning: Event log directory not found; skipping Event Log monitor." -ForegroundColor DarkYellow
     }
-}
 
-function Restart-Splunk {
-    Write-Host "Restarting Splunk Universal Forwarder..." -ForegroundColor Cyan
-    Invoke-Splunk @("restart")
-}
-
-function Show-Status {
-    Write-Host "Waiting 15 seconds for Splunk UF to reconnect..." -ForegroundColor Cyan
-    Start-Sleep -Seconds 15
-    Invoke-Splunk @("list", "forward-server")
-    Invoke-Splunk @("list", "monitor")
-}
-
-# --- 4. Execution Flow ---
-try {
-    Add-ForwardServer
-    Set-ClientHostname
-    Restart-Splunk
-    Add-Monitors
-    Restart-Splunk
-    Show-Status
-    Write-Host "`nSetup and configuration completed successfully!" -ForegroundColor Green
+    Set-Content -Path "$localConfigDir\inputs.conf" -Value $inputsConf -Encoding UTF8
+    Write-Host "Configured inputs.conf" -ForegroundColor Green
 }
 catch {
-    Write-Error "An error occurred during configuration: $_"
+    Write-Error "Failed to write configuration files: $_"
+    exit
+}
+
+# --- 4. Restart Splunk Service ---
+try {
+    Write-Host "`nRestarting SplunkForwarder Service..." -ForegroundColor Cyan
+    Restart-Service -Name "SplunkForwarder" -ErrorAction Stop
+    Write-Host "SplunkForwarder service restarted successfully!" -ForegroundColor Green
+    Write-Host "`nSetup complete! Log files, event logs, and target settings are active." -ForegroundColor Green
+}
+catch {
+    Write-Error "Failed to restart SplunkForwarder service: $_"
 }
