@@ -136,11 +136,11 @@ def act_II():
 
     logging.debug("Mariadb service started")
 
-    location = os.path.join(os.getcwd(), log_name)
+    log_location = os.path.join(os.getcwd(), log_name)
                             
     lines = [
         f"databasename=Greyrose_DB\n",
-        f"log_name={location}\n",
+        f"log_name={log_location}\n",
         f"username={username}\n",
         f"password={password}\n"
     ]
