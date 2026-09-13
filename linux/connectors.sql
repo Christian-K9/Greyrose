@@ -2,7 +2,6 @@ CREATE DATABASE IF NOT EXISTS Greyrose_DB;
 
 --greyrose_user
 
-GRANT ALL PRIVILEGES ON Greyrose_DB.* 
 --granted_privileges
 USE Greyrose_DB;
 
