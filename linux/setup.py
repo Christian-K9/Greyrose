@@ -293,6 +293,10 @@ def resolution():
 
 def epilogue():
     print("Final Check....")
+
+    subprocess.run(["sudo", "systemctl", "daemon-reload"])
+    subprocess.run(["sudo", "systemctl", "restart", "Greyrose.service"])
+    
     #check for correct permissions
     print("Applying correct permissions")
     locations = {"connectors.sql": "script", "firewall": "script", "Greyrose.service" : "non-script",
