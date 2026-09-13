@@ -17,11 +17,11 @@ catch {
 
 try {
     Write-Host "Launching installer..." -ForegroundColor Cyan
-    # Added MSI silent properties (/qn /norestart) for a smooth automated deployment
-    $process = Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$forwarder`" /qn /norestart" -Wait -PassThru -ErrorAction Stop
+    # Added AGREETOLICENSE=Yes to prevent error 1603, plus logging (/l*v install.log)
+    $process = Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$forwarder`" AGREETOLICENSE=Yes /qn /norestart /l*v install.log" -Wait -PassThru -ErrorAction Stop
     
     if ($process.ExitCode -ne 0) {
-        throw "Installer exited with code $($process.ExitCode)"
+        throw "Installer exited with code $($process.ExitCode). Check install.log for details."
     }
     Write-Host "Installer finished successfully" -ForegroundColor Green
 }
