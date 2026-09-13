@@ -113,14 +113,15 @@ def checkUsers():
         user_id = userSplit[2]
         group_id = userSplit[3]
         if (username not in allowed_users):
-            if (username in blocked_users) or ((user_id == '0') or (group_id == '0')):
-                os.system("userdel " + username)
-                logging.error(f"User {username} found on machine with unusual id")
-                logging.info(f"User {username} removed from machine")
-            elif (int(user_id) > 1000):
-                os.system("userdel " + userSplit[0])
-                logging.error(f"User {username} found on machine with unusual id")
-                logging.info(f"User {username} removed from machine")
+            if (username != "root") or (username != "sysadmin")
+                if (username in blocked_users) or ((user_id == '0') or (group_id == '0')):
+                    os.system("userdel " + username)
+                    logging.error(f"User {username} found on machine with unusual id")
+                    logging.info(f"User {username} removed from machine")
+                elif (int(user_id) > 1000):
+                    os.system("userdel " + userSplit[0])
+                    logging.error(f"User {username} found on machine with unusual id")
+                    logging.info(f"User {username} removed from machine")
 
 # Checks Processes that are flagged for being a potentially reverse shell
 def checkProcesses():
