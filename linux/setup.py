@@ -286,9 +286,9 @@ def resolution():
     logging.debug("Firewall command set")
 
     #move quarentine to root directory
-    subprocess.run(["mv", "quarantine", "/root/quarantine"])
+    subprocess.run(["sudo", "mv", "quarantine", "/root/quarantine"])
 
-    subprocess.run(["cp", "db.conf", "/usr/local/bin/db.conf"])
+    subprocess.run(["sudo", "cp", "db.conf", "/usr/local/bin/db.conf"])
 
 def epilogue():
     print("Final Check....")
