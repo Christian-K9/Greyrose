@@ -310,6 +310,12 @@ def interface():
         else:
             functions[choice]()
             reload()
+            fetch()
+            print()
+            print()
+            display()
+            print()
+            print()
 
 print("firewall started")        
 fetch()
