@@ -1,4 +1,4 @@
-#!/home/chris/Downloads/Greyrose/linux/ccdc_venv/bin/python3
+
 
 import sys
 import logging

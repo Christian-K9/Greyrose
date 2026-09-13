@@ -14,38 +14,48 @@ forwarders = {"debian": "https://download.splunk.com/products/universalforwarder
     "fedora": "https://download.splunk.com/products/universalforwarder/releases/10.0.3/linux/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.rpm"
     }
 
-#types of servers running
-machines = ["debian", "ubuntu", "centos", "fedora"]
-print("Server Types:")
-print(f"        {machines}")
-
-server = ""
-#machine is based on user input
-while server not in machines:
-    server = input("What Server Are You Running? ")
-    if server.lower() not in machines:
-        print("Not Valid Operating System Name")
-
-username = input("Enter Centralized Username (Can be sysadmin): ")
-password = getpass.getpass("Enter Centralized Password: ")
-
-#get name of operating system via hostnamectl
-result = subprocess.run(["hostnamectl"], capture_output=True, text=True)
-pattern = r"Operating System: (.+)"
-match = re.search(pattern, result.stdout)
-if match:
-    log_name = match.group(1).split()[0]
-else:
-    print("Opearting system field not found in hostnamectl")
-    log_name = "linux"
-
-#Centralized logging in linux .log file
-logging.basicConfig(level=logging.DEBUG, filename=f"{log_name}.log", 
-        filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
-
 new_owner = "root:root"
+username = ""
+password = ""
+server = ""
+log_name = ""
 
-def act_I():
+def prologue():
+    global username
+    global password
+    global server
+    global log_name
+    #types of servers running
+    machines = ["debian", "ubuntu", "centos", "fedora"]
+    print("Server Types:")
+    print(f"        {machines}")
+
+    server = ""
+    #machine is based on user input
+    while server not in machines:
+        server = input("What Server Are You Running? ")
+        if server.lower() not in machines:
+            print("Not Valid Operating System Name")
+
+    username = input("Enter Centralized Username (Can be sysadmin): ")
+    password = getpass.getpass("Enter Centralized Password: ")
+
+    #get name of operating system via hostnamectl
+    result = subprocess.run(["hostnamectl"], capture_output=True, text=True)
+    pattern = r"Operating System: (.+)"
+    match = re.search(pattern, result.stdout)
+    if match:
+        log_name = match.group(1).split()[0]
+    else:
+        print("Opearting system field not found in hostnamectl")
+        log_name = "linux"
+
+    #Centralized logging in linux .log file
+    logging.basicConfig(level=logging.DEBUG, filename=f"{log_name}.log", 
+            filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
+
+
+def exposition():
     #installing necessary libraries
     #putting a 0.1 second gap between each one so processes don't conflict
     time.sleep(0.1)
@@ -88,36 +98,12 @@ def try_again(library):
         print(f"Error: Installation Failed twice with exit code: {e.returncode}")
         sys.exit()
 
-
-def act_III():
-    #run nftables based on loaded configuration file
-    print("Running nftables...")
-    subprocess.run(["sudo", "nft", 
-        "-f", "nftables.conf"])
-    logging.debug("Running nftables")
-
-    #start the nftables service
-    print("Starting nftables service...")
-    subprocess.run(["sudo", "systemctl", "start", "nftables"])
-    logging.debug("Starting nftable service")
-
-    #enable the nftables service
-    print("Enabling nftables service...")
-    subprocess.run(["sudo", "systemctl", "enable", "--now", "nftables"])
-    logging.debug("Enabling nftables service")
-
-    #reloading changes based on conf table
-    subprocess.run(["sudo", "nft", "-f", "nftables.conf"])
-
-    logging.debug("nftables service started and enabled")
-
-def act_II():
+def act_I():
     #create python environment to prevent any dependency issues
     #side note: this is optional. not all linux machines have undependable python libraries
     venv_dir = "ccdc_venv"
     print("creating python environment")
     subprocess.run(["sudo", "python3", "-m", "venv", venv_dir])
-    python_executable = f"{venv_dir}/bin/python3"
     pip_dir = f"{venv_dir}/bin/pip"
     subprocess.run(["sudo", "chown", "-R", new_owner, venv_dir])
     subprocess.run(["sudo", "mkdir", "-p", "wheels"])
@@ -142,6 +128,7 @@ def act_II():
     logging.debug(f"python depenencies installed")
 
 
+def act_II():
     #activate mariadb
     subprocess.run(["sudo", "systemctl", "enable", "mariadb"])
     subprocess.run(["sudo", "systemctl", "start", "mariadb"])
@@ -182,6 +169,7 @@ def act_II():
     shebang = f"#!{location}"
     print(f"shebang: {shebang}")
     subprocess.run(["sudo", "sed", "-i", f"1i {shebang}", "firewall"])
+    subprocess.run(["sudo", "sed", "-i", f"1i {shebang}", "tracker.py"])
     subprocess.run(["sudo", "cp", "firewall", "/usr/local/bin/firewall"])
     subprocess.run(["sudo", "chmod", "700", "/usr/local/bin/firewall"])
 
@@ -197,7 +185,10 @@ def act_II():
 
     logging.debug("Mariadb .sql database initiated")
 
+def act_III():
     #create service
+    venv_dir = "ccdc_venv"
+    python_executable = f"{venv_dir}/bin/python3"
     new_location = f's|^ExecStart=.*|ExecStart={python_executable}| /usr/loca/bin/tracker.py'
     subprocess.run(["sudo", "sed", "-i", new_location, "Greyrose.service"])
     subprocess.run(["sudo", "cp", "Greyrose.service", "/etc/systemd/system/Greyrose.service"])
@@ -209,6 +200,28 @@ def act_II():
 
     logging.debug("Greyrose Service started and enabled")
 
+
+def climax():
+    #run nftables based on loaded configuration file
+    print("Running nftables...")
+    subprocess.run(["sudo", "nft", 
+        "-f", "nftables.conf"])
+    logging.debug("Running nftables")
+
+    #start the nftables service
+    print("Starting nftables service...")
+    subprocess.run(["sudo", "systemctl", "start", "nftables"])
+    logging.debug("Starting nftable service")
+
+    #enable the nftables service
+    print("Enabling nftables service...")
+    subprocess.run(["sudo", "systemctl", "enable", "--now", "nftables"])
+    logging.debug("Enabling nftables service")
+
+    #reloading changes based on conf table
+    subprocess.run(["sudo", "nft", "-f", "nftables.conf"])
+
+    logging.debug("nftables service started and enabled")
 
 def run_dpkg():
     cmd = ["sudo", "dpkg", "-i", "/opt/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.deb"]
@@ -225,7 +238,7 @@ def run_dpkg():
             print("dpkg returned with uknown error")
             logging.error("dpkg returned with unknown error")
 
-def act_IV():
+def falling_action():
     #get splunk forwarder off the internet
     print("Fetching splunk forwarder off the internet...")
     print(f"Forwarder Name: {forwarders[server]}")
@@ -258,7 +271,7 @@ def act_IV():
     logging.debug("Added new monitors to splunk")
 
 
-def epilogue():
+def resolution():
     #change the permission of every file in the directory
     print("Applying permissions...")
     subprocess.run(["sudo", "chmod", "700", "setup.py"])
@@ -275,7 +288,7 @@ def epilogue():
     #move quarentine to root directory
     subprocess.run(["mv", "quarantine", "/root/quarantine"])
 
-def final_check():
+def epilogue():
     print("Final Check....")
     #check for correct permissions
     locations = ["connectors.sql", "firewall", "Greyrose.service", "nftables.conf",
@@ -313,10 +326,11 @@ def final_check():
         logging.warning("Splunk Pathway does not exist")
     #check if my sanity still exist
 
-
+prologue()
+exposition()
 act_I()
 act_II()
 act_III()
-act_IV()
+climax()
+falling_action()
 epilogue()
-final_check()
