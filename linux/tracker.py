@@ -11,18 +11,6 @@ import mariadb
 import signal
 from pathlib import Path
 
-result = subprocess.run(["hostnamectl"], capture_output=True, text=True)
-pattern = r"Operating System: (.+)"
-match = re.search(pattern, result.stdout)
-if match:
-    log_name = match.group(1).split()[0]
-else:
-    print("Opearting system field not found in hostnamectl")
-    log_name = "linux"
-
-#Centralized logging in linux .log file
-logging.basicConfig(level=logging.DEBUG, filename=f"{log_name}.log", 
-    filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
 
 #read lines from db.conf file
 config = {}
@@ -36,6 +24,12 @@ for line in Path("db.conf").read_text().splitlines():
 database_name = config["databasename"]
 username = config["username"]
 password = config["password"]
+log_name = config["log_name"]
+
+#Centralized logging in linux .log file
+logging.basicConfig(level=logging.DEBUG, filename=f"{log_name}.log", 
+    filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
+
 #connect with the mariadb database
 try:
     conn = mariadb.connect(
