@@ -294,11 +294,19 @@ def epilogue():
     print("Final Check....")
     #check for correct permissions
     print("Applying correct permissions")
-    locations = ["connectors.sql", "firewall", "Greyrose.service", "nftables.conf",
-                 "setup.py", "tracker.py", "wheels", "ccdc_venv", f"{log_name}.log"]
+    locations = {"connectors.sql": "script", "firewall": "script", "Greyrose.service" : "non-script",
+                "nftables.conf": "non-script", "setup.py": "script", "tracker.py": "script",
+                 "wheels": "non-script", "ccdc_venv": "non-script", f"{log_name}.log": "non-script",
+                "/usr/local/bin/db.conf": "non-script", "/usr/local/bin/firewall": "script",
+                 "/usr/local/bin/tracker.py": "script"}
+    
     for i in locations:
         subprocess.run(["sudo", "chown",  "-R", new_owner, i])
-        subprocess.run(["sudo", "chmod", "600", i])
+        if locations[i] == "script":
+            permissions = "700"
+        else:
+            permissions = "600"
+        subprocess.run(["sudo", "chmod", permissions, i])
 
     #check for mariadb service started
     print("Checking if mariadb service is active")
