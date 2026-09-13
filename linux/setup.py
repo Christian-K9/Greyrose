@@ -291,6 +291,7 @@ def resolution():
 def epilogue():
     print("Final Check....")
     #check for correct permissions
+    print("Applying correct permissions")
     locations = ["connectors.sql", "firewall", "Greyrose.service", "nftables.conf",
                  "setup.py", "tracker.py", "wheels", "ccdc_venv", f"{log_name}.log"]
     for i in locations:
@@ -298,22 +299,31 @@ def epilogue():
         subprocess.run(["sudo", "chmod", "600", i])
 
     #check for mariadb service started
+    print("Checking if mariadb service is active")
     result = subprocess.run(["sudo", "systemctl", "is-active", "mariadb.service"], capture_output=True, text=True)
     if result == "inactive":
         print("ERROR: mariadb.service is inactive")
         logging.warning("mariadb service is inactive")
+    else:
+        print("mariadb service: active")
 
     #check if nftables service started
+    print("Checking if nftables service is active")
     result = subprocess.run(["sudo", "systemctl", "is-active", "nftables.service"], capture_output=True, text=True)
     if result == "inactive":
         print("ERROR: nftables.service is inactive")
         logging.warning("nftables service is inactive")
+    else:
+        print("nftables service: active")
 
     #check for greyrose service started
+    print("Checking if greyrose service is active")
     result = subprocess.run(["sudo", "systemctl", "is-active", "Greyrose.service"], capture_output=True, text=True)
-    if result == "inactive":
+    if result == "inactive" or result == "failed":
         print("ERROR: Greyrose.service is inactive")
         logging.warning("Greyrose service is inactive")
+    else:
+        print("active")
 
     #check if splunk exist
     print("Checking if splunk forwarder is addded")
