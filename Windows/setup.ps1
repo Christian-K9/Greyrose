@@ -4,7 +4,7 @@ $forwarder = "splunkforwarder-10.0.1-c486717c322b-windows-x64.msi"
 $url = "https://download.splunk.com/products/universalforwarder/releases/10.0.1/windows/$forwarder"
 $splunkPath = "C:\Program Files\SplunkUniversalForwarder\bin\splunk.exe"
 
-# --- 1. Download & Install Splunk Universal Forwarder ---
+# ownload & Install Splunk Universal Forwarder
 try {
     Write-Host "Downloading $forwarder..." -ForegroundColor Cyan
     Invoke-WebRequest -Uri $url -OutFile $forwarder -ErrorAction Stop
@@ -30,7 +30,7 @@ catch {
     exit
 }
 
-# --- 2. Prompt for User Inputs ---
+# rompt for User Inputs
 Write-Host "`n--- Splunk Configuration ---" -ForegroundColor Yellow
 $server = Read-Host "What is the Server IP?"
 $port = Read-Host "What is the Server Receiving Port?"
@@ -44,7 +44,6 @@ $login = "$username`:$password"
 
 $hostname = Read-Host "Enter a hostname for this client"
 
-# --- 3. Functions ---
 function Invoke-Splunk {
     param([string[]]$Arguments)
     & $splunkPath @Arguments
@@ -71,7 +70,7 @@ function Add-ForwardServer {
     try { Invoke-Splunk @("remove", "forward-server", $indexer) } catch { Write-Host "No existing forward-server to remove or removal skipped." -ForegroundColor DarkYellow }
     
     Write-Host "Adding New Forward-Server..." -ForegroundColor Cyan
-    Invoke-Splunk @("add", "forward-server", $indexer, "-auth", $login)
+    Invoke-Splunk @("add", "forward-server", $indexer)
 }
 
 function Add-Monitors {
