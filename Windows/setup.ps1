@@ -5,7 +5,7 @@ $url = "https://download.splunk.com/products/universalforwarder/releases/10.0.1/
 $installDir = "C:\Program Files\SplunkUniversalForwarder"
 $localConfigDir = "$installDir\etc\system\local"
 
-# --- 1. Download & Install Splunk Universal Forwarder ---
+# download & install splunk universal forwarder
 try {
     Write-Host "Downloading $forwarder..." -ForegroundColor Cyan
     Invoke-WebRequest -Uri $url -OutFile $forwarder -ErrorAction Stop
@@ -31,14 +31,14 @@ catch {
     exit
 }
 
-# --- 2. Prompt for Inputs ---
+# prompt for inputs
 Write-Host "`n--- Splunk Configuration ---" -ForegroundColor Yellow
 $server = Read-Host "What is the Server IP?"
 $port = Read-Host "What is the Server Receiving Port (e.g., 9997)?"
 $indexer = "$server`:$port"
 $hostname = Read-Host "Enter a hostname for this client"
 
-# --- 3. Write Splunk Configuration Files ---
+# write splunk configuration files ---
 try {
     Write-Host "`nConfiguring Splunk files directly..." -ForegroundColor Cyan
 
@@ -110,7 +110,7 @@ catch {
     exit
 }
 
-# --- 4. Restart Splunk Service ---
+# restart splunk service ---
 try {
     Write-Host "`nRestarting SplunkForwarder Service..." -ForegroundColor Cyan
     Restart-Service -Name "SplunkForwarder" -ErrorAction Stop
