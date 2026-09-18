@@ -374,5 +374,5 @@ functions = {"install": exposition, "python": act_I,
 #    for i in functions:
 #        functions[i]()
 
-for i in functions():
+for i in functions:
     functions[i]()
