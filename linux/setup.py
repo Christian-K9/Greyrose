@@ -184,9 +184,8 @@ def act_II():
                 "oracle": ["8000", "8089", "9997"]}
 
     for port_number in services[server]:
-        string_arg_I = f'/# END: ACCEPTED PORT CONNECTIONS/i \\\ttcp sport {port_number} accept'
-        print(string_arg_I)
-        string_arg_II = f'/# END: ACCEPTED PORT CONNECTIONS/i \\\ttcp dport {port_number} accept'
+        string_arg_I = f'/# END: ACCEPTED PORT CONNECTION/i \\\ttcp sport {port_number} accept'
+        string_arg_II = f'/# END: ACCEPTED PORT CONNECTION/i \\\ttcp dport {port_number} accept'
         string_arg_III = f'/--default_ports/i INSERT INTO accepted_ports (port) VALUES ({port_number});'
         subprocess.run(["sudo", "sed", "-i",
             string_arg_I, "nftables.conf"])
@@ -194,7 +193,6 @@ def act_II():
             string_arg_II, "nftables.conf"])
         subprocess.run(["sudo", "sed", "-i",
                 string_arg_III, "connectors.sql"])
-
 
     #initiate greyrose database
     print("RUNNING SQL SCRIPT...")
