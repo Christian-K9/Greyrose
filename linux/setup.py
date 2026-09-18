@@ -354,12 +354,42 @@ def epilogue():
     #check if my sanity still exist
 
 
-prologue()
-exposition()
-act_I()
-act_II()
-act_III()
-climax()
-falling_action()
-resolution()
-epilogue()
+def run():
+    prologue()
+    #install packages
+    exposition()
+    #create python environment
+    act_I()
+    #create database
+    act_II()
+    #create greyrose service
+    act_III()
+    #enforce firewall
+    climax()
+    #add splunk forwarders
+    falling_action()
+    #move directories
+    resolution()
+    #apply final permissions
+    epilogue()
+
+if len(sys.argv) > 1:
+    argument = sys.argv[1]
+    if (argument == "-i") or (argument == "--install"):
+        exposition()
+    elif (argument == "-p") or (argument == "--python"):
+        act_I()
+    elif (argument == "-d") or (argument == "--database"):
+        act_II()
+    elif (argument == "-g") or (argument == "--greyrose"):
+        act_III()
+    elif (argument == "-e") or (argument == "--enforce"):
+        climax()
+    elif (argument == "-s") or (argument == "--splunk"):
+        falling_action()
+    elif (argument == "-m") or (argument == "--move"):
+        resolution()
+    elif (argument == "f") or (argument == "finale"):
+        epilogue()
+else:
+    run()
