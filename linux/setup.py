@@ -231,7 +231,7 @@ def climax():
     for port_number in services[server]:
         string_arg_I = f'/# END: ACCEPTED PORT CONNECTIONS/i \\\ttcp sport {port_number} accept'
         string_arg_II = f'/# END: ACCEPTED PORT CONNECTIONS/i \\\ttcp dport {port_number} accept'
-        string_arg_III = f'/--default_ports/i INSERT INTO accepted_ports (name) VALUES ({port_number});'
+        string_arg_III = f'/--default_ports/i INSERT INTO accepted_ports (port) VALUES ({port_number});'
         subprocess.run(["sudo", "sed", "-i",
             string_arg_I, "nftables.conf"])
         subprocess.run(["sudo", "sed", "-i",
@@ -312,7 +312,8 @@ def resolution():
 
     #move quarentine to root directory
     subprocess.run(["sudo", "mv", "quarantine", "/root/quarantine"])
-
+    subprocess.run(["sudo", "chown", "root:root", "/root/quarantine"])
+    subprocess.run(["sudo", "chmod", "600", "/root/quarantine"])
     subprocess.run(["sudo", "cp", "db.conf", "/usr/local/bin/db.conf"])
 
 def epilogue():
