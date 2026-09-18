@@ -361,15 +361,18 @@ functions = {"install": exposition, "python": act_I,
                "finale": epilogue}
 
 
-parser = argparse.ArgumentParser(prog="Setup.py",
-    description="Sets up mariadb, nftables, greyrose services as well as" \
-    "enable tracker and firewall script")
+#parser = argparse.ArgumentParser(prog="Setup.py",
+#    description="Sets up mariadb, nftables, greyrose services as well as" \
+#    "enable tracker and firewall script")
+#
+#parser.add_argument("-v", "--verbose", type=str, help="Isolate Function")
+#args = parser.parse_args()
+#
+#if args.section:
+#    functions[args.section]()
+#else:
+#    for i in functions:
+#        functions[i]()
 
-parser.add_argument("-v", "--verbose", type=str, help="Isolate Function")
-args = parser.parse_args()
-
-if args.section:
-    functions[args.section]()
-else:
-    for i in functions:
-        functions[i]()
+for i in functions():
+    functions[i]()
