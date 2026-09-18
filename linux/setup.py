@@ -416,5 +416,7 @@ if len(sys.argv) > 1:
         resolution()
     elif (argument == "-f") or (argument == "--finale"):
         epilogue()
+    else:
+        print(f"{argument}: Not valid script argument")
 else:
     run()
