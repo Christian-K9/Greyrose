@@ -185,6 +185,7 @@ def act_II():
 
     for port_number in services[server]:
         string_arg_I = f'/# END: ACCEPTED PORT CONNECTIONS/i \\\ttcp sport {port_number} accept'
+        print(string_arg_I)
         string_arg_II = f'/# END: ACCEPTED PORT CONNECTIONS/i \\\ttcp dport {port_number} accept'
         string_arg_III = f'/--default_ports/i INSERT INTO accepted_ports (port) VALUES ({port_number});'
         subprocess.run(["sudo", "sed", "-i",
