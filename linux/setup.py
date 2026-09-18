@@ -240,6 +240,7 @@ def run_dpkg():
         else:
             print("dpkg returned with uknown error")
             logging.error("dpkg returned with unknown error")
+    return False
 
 def falling_action():
     #get splunk forwarder off the internet
@@ -248,7 +249,9 @@ def falling_action():
     time.sleep(0.1)
     subprocess.run(["sudo", "wget", "-O", "/opt/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.deb", forwarders[server]])
     time.sleep(0.1)
-    run_dpkg()
+    if run_dpkg() == False:
+        print("Splunk Forwarders Failed to install")
+        logging.error("Python Forwarders Failed to Install")
     time.sleep(0.1)
     logging.debug("Fetched splunk forwarder off the internet")
 
@@ -375,6 +378,7 @@ def run():
 
 if len(sys.argv) > 1:
     argument = sys.argv[1]
+    prologue()
     if (argument == "-i") or (argument == "--install"):
         exposition()
     elif (argument == "-p") or (argument == "--python"):
