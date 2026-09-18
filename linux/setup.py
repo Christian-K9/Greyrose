@@ -252,6 +252,7 @@ def falling_action():
     if run_dpkg() == False:
         print("Splunk Forwarders Failed to install")
         logging.error("Python Forwarders Failed to Install")
+        sys.exit()
     time.sleep(0.1)
     logging.debug("Fetched splunk forwarder off the internet")
 
