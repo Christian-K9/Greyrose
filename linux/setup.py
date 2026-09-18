@@ -6,15 +6,12 @@ import sys
 from pathlib import Path
 import re
 import getpass
-import argparse
 
 #assign splunk forwarder based on machine
 forwarders = {"debian": "https://download.splunk.com/products/universalforwarder/releases/10.0.3/linux/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.deb",
     "ubuntu": "https://download.splunk.com/products/universalforwarder/releases/10.0.3/linux/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.deb",
     "centos": "https://download.splunk.com/products/universalforwarder/releases/10.0.3/linux/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.deb",
-    "fedora": "https://download.splunk.com/products/universalforwarder/releases/10.0.3/linux/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.rpm",
-    "rocky": "https://download.splunk.com/products/universalforwarder/releases/10.0.3/linux/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.rpm",
-    "oracle": "https://download.splunk.com/products/universalforwarder/releases/10.0.3/linux/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.rpm"
+    "fedora": "https://download.splunk.com/products/universalforwarder/releases/10.0.3/linux/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.rpm"
     }
 
 new_owner = "root:root"
@@ -22,14 +19,12 @@ username = ""
 password = ""
 server = ""
 log_name = ""
-package_manager = ""
 
 def prologue():
     global username
     global password
     global server
     global log_name
-    global package_manager
     #types of servers running
     machines = ["debian", "ubuntu", "centos", "fedora"]
     print("Server Types:")
@@ -41,11 +36,6 @@ def prologue():
         server = input("What Server Are You Running? ")
         if server.lower() not in machines:
             print("Not Valid Operating System Name")
-
-    if server == "ubuntu":
-        package_manager = "apt"
-    else:
-        package_manager = "yum"
 
     username = input("Enter Centralized Username (Can be sysadmin): ")
     password = getpass.getpass("Enter Centralized Password: ")
@@ -69,16 +59,15 @@ def exposition():
     #installing necessary libraries
     #putting a 0.1 second gap between each one so processes don't conflict
     time.sleep(0.1)
-    package_manager_get = f"{package_manager}-get"
     libraries = ["libmariadb-dev", "python3-dev", "build-essential",
                  "python3-venv", "python3-pip", "mariadb-server", "mariadb-client"]
     subprocess.run(["sudo", "timedatectl", "set-ntp", "true"])
-    subprocess.run(["sudo", package_manager_get, "update"])
-    subprocess.run(["sudo", package_manager_get, "--fix-missing-install"])
+    subprocess.run(["sudo", "apt-get", "update"])
+    subprocess.run(["sudo", "apt-get", "--fix-missing-install"])
     for i in libraries:
-        command = ["sudo", package_manager_get, "install", i, "-y"]
+        command = ["sudo", "apt-get", "install", i, "-y"]
         try:
-            result = subprocess.run(["sudo", package_manager_get, "install", "-y"] + libraries, check=True,)
+            result = subprocess.run(["sudo", "apt-get", "install", "-y"] + libraries, check=True,)
             time.sleep(0.1)
 
             print("Installation Sucessful!")
@@ -147,9 +136,11 @@ def act_II():
 
     logging.debug("Mariadb service started")
 
+    log_location = os.path.join(os.getcwd(), log_name)
+                            
     lines = [
         f"databasename=Greyrose_DB\n",
-        f"logname={log_name}\n"
+        f"log_name={log_location}\n",
         f"username={username}\n",
         f"password={password}\n"
     ]
@@ -215,17 +206,6 @@ def act_III():
 
 def climax():
     #run nftables based on loaded configuration file
-    services = {"rocky": [110, 25, 22, 80, 443, 9997],
-                "fedora": [53, 9997], "https": [443, 9997],
-                "ubuntu": [443, 22, 9997],
-                "oracle": [8000, 8089, 9997]}
-
-    for i in services[server]:
-        string_arg = f'/# END: ACCEPTED PORT CONNECTION/i \\\ttcp source {i} accept'
-        string_arg_II = f'/# END: ACCEPTED PORT CONNECTION/i \\\ttcp destination {i} accept'
-        subprocess.run(["sudo", "sed", "-i",
-            string_arg, "nftables.conf"])
-    
     print("Running nftables...")
     subprocess.run(["sudo", "nft", 
         "-f", "nftables.conf"])
@@ -281,7 +261,7 @@ def falling_action():
     splunk = input("What Is The Splunk Ip Address?: ")
     splunk_port = input("What is the Splunk Port: ")
     forward_server = f"{splunk}:{splunk_port}"
-    logging_file = os.path.join(os.getcwd(), log_name)
+    
     #add monitors
     print("Adding Monitors...")
     subprocess.run(["/opt/splunkforwarder/bin/splunk", "add", "forward-server", "forward_server", forward_server])
@@ -290,7 +270,6 @@ def falling_action():
     subprocess.run(["/opt/splunkforwarder/bin/splunk", "add", "monitor", "/etc/passwd"])
     subprocess.run(["/opt/splunkforwarder/bin/splunk", "add", "monitor", "/etc/systemd/system"])
     subprocess.run(["/opt/splunkforwarder/bin/splunk", "add", "monitor", "/usr/lib/systemd/system"])
-    subprocess.run(["/opt/splunkforwarder/bin/splunk", "add", "monitor", logging_file])
     subprocess.run(["/opt/splunkforwarder/bin/splunk", "enable", "boot-start"])
     logging.debug("Added new monitors to splunk")
 
@@ -311,37 +290,57 @@ def resolution():
 
     #move quarentine to root directory
     subprocess.run(["sudo", "mv", "quarantine", "/root/quarantine"])
-    subprocess.run(["sudo", "chown", "root:root", "/root/quarantine"])
-    subprocess.run(["sudo", "chmod", "600", "/root/quarantine"])
+
+    subprocess.run(["sudo", "cp", "db.conf", "/usr/local/bin/db.conf"])
 
 def epilogue():
     print("Final Check....")
+
+    subprocess.run(["sudo", "systemctl", "daemon-reload"])
+    subprocess.run(["sudo", "systemctl", "restart", "Greyrose.service"])
+    
     #check for correct permissions
-    locations = ["connectors.sql", "firewall", "Greyrose.service", "nftables.conf", "backup",
-                 "setup.py", "tracker.py", "wheels", "ccdc_venv", f"{log_name}.log", "db.conf",
-                 "setup.py.swp"]
+    print("Applying correct permissions")
+    locations = {"connectors.sql": "script", "firewall": "script", "Greyrose.service" : "non-script",
+                "nftables.conf": "non-script", "setup.py": "script", "tracker.py": "script",
+                 "wheels": "non-script", "ccdc_venv": "non-script", f"{log_name}.log": "non-script",
+                "/usr/local/bin/db.conf": "non-script", "/usr/local/bin/firewall": "script",
+                 "/usr/local/bin/tracker.py": "script", "/etc/systemd/system/Greyrose.service": "script"}
     
     for i in locations:
         subprocess.run(["sudo", "chown",  "-R", new_owner, i])
-        subprocess.run(["sudo", "chmod", "600", i])
+        if locations[i] == "script":
+            permissions = "700"
+        else:
+            permissions = "600"
+        subprocess.run(["sudo", "chmod", permissions, i])
 
     #check for mariadb service started
+    print("Checking if mariadb service is active")
     result = subprocess.run(["sudo", "systemctl", "is-active", "mariadb.service"], capture_output=True, text=True)
-    if result == "inactive" or result == "failed":
+    if result == "inactive":
         print("ERROR: mariadb.service is inactive")
         logging.warning("mariadb service is inactive")
+    else:
+        print("mariadb service: active")
 
     #check if nftables service started
+    print("Checking if nftables service is active")
     result = subprocess.run(["sudo", "systemctl", "is-active", "nftables.service"], capture_output=True, text=True)
-    if result == "inactive" or result == "failed":
+    if result == "inactive":
         print("ERROR: nftables.service is inactive")
         logging.warning("nftables service is inactive")
+    else:
+        print("nftables service: active")
 
     #check for greyrose service started
+    print("Checking if greyrose service is active")
     result = subprocess.run(["sudo", "systemctl", "is-active", "Greyrose.service"], capture_output=True, text=True)
     if result == "inactive" or result == "failed":
         print("ERROR: Greyrose.service is inactive")
         logging.warning("Greyrose service is inactive")
+    else:
+        print("active")
 
     #check if splunk exist
     print("Checking if splunk forwarder is addded")
@@ -355,24 +354,12 @@ def epilogue():
     #check if my sanity still exist
 
 
-functions = {"install": exposition, "python": act_I, 
-             "database": act_II, "greyrose": act_III,
-              "enforce": climax, "splunk": falling_action,
-               "finale": epilogue}
-
-
-#parser = argparse.ArgumentParser(prog="Setup.py",
-#    description="Sets up mariadb, nftables, greyrose services as well as" \
-#    "enable tracker and firewall script")
-#
-#parser.add_argument("-v", "--verbose", type=str, help="Isolate Function")
-#args = parser.parse_args()
-#
-#if args.section:
-#    functions[args.section]()
-#else:
-#    for i in functions:
-#        functions[i]()
-
-for i in functions:
-    functions[i]()
+prologue()
+exposition()
+act_I()
+act_II()
+act_III()
+climax()
+falling_action()
+resolution()
+epilogue()
