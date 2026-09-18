@@ -365,7 +365,7 @@ parser = argparse.ArgumentParser(prog="Setup.py",
     description="Sets up mariadb, nftables, greyrose services as well as" \
     "enable tracker and firewall script")
 
-parser.add_argument("-v", "--verbose", type=str, help="Isolate Function")
+parser.add_argument("-s", "--section", type=str, help="Isolate Function")
 args = parser.parse_args()
 
 if args.section:
