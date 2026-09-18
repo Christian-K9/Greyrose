@@ -55,3 +55,5 @@ CREATE TABLE IF NOT EXISTS blacklist (
 
 INSERT INTO allowed_services (name)
 VALUES ("Greyrose.service")
+
+--default_ports

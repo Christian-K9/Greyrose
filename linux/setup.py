@@ -11,7 +11,9 @@ import getpass
 forwarders = {"debian": "https://download.splunk.com/products/universalforwarder/releases/10.0.3/linux/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.deb",
     "ubuntu": "https://download.splunk.com/products/universalforwarder/releases/10.0.3/linux/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.deb",
     "centos": "https://download.splunk.com/products/universalforwarder/releases/10.0.3/linux/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.deb",
-    "fedora": "https://download.splunk.com/products/universalforwarder/releases/10.0.3/linux/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.rpm"
+    "fedora": "https://download.splunk.com/products/universalforwarder/releases/10.0.3/linux/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.rpm",
+    "rocky": "https://download.splunk.com/products/universalforwarder/releases/10.0.3/linux/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.rpm",
+    "oracle": "https://download.splunk.com/products/universalforwarder/releases/10.0.3/linux/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.rpm"
     }
 
 new_owner = "root:root"
@@ -221,6 +223,22 @@ def climax():
     subprocess.run(["sudo", "systemctl", "enable", "--now", "nftables"])
     logging.debug("Enabling nftables service")
 
+    services = {"rocky": ["110", "25", "80", "443", "22", "9997"],
+                "fedora": ["53", "9997"],
+                "ubuntu": ["443", "22", "9997"],
+                "oracle": ["8000", "8089", "9997"]}
+
+    for port_number in services[server]:
+        string_arg_I = f'/# END: DENIED PORT CONNECTIONS/i \\\ttcp sport {port_number} accept'
+        string_arg_II = f'/# END: DENIED PORT CONNECTIONS/i \\\ttcp dport {port_number} accept'
+        string_arg_III = f'/--default_ports/i INSERT INTO accepted_ports (name) VALUES ({port_number});'
+        subprocess.run(["sudo", "sed", "-i",
+            string_arg_I, "nftables.conf"])
+        subprocess.run(["sudo", "sed", "-i",
+            string_arg_II, "nftables.conf"])
+        subprocess.run(["sudo", "sed", "-i",
+                string_arg_III, "connectors.sql"])
+
     #reloading changes based on conf table
     subprocess.run(["sudo", "nft", "-f", "nftables.conf"])
 
@@ -394,7 +412,7 @@ if len(sys.argv) > 1:
         falling_action()
     elif (argument == "-m") or (argument == "--move"):
         resolution()
-    elif (argument == "f") or (argument == "finale"):
+    elif (argument == "-f") or (argument == "--finale"):
         epilogue()
 else:
     run()
