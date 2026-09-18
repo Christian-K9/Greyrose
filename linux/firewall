@@ -313,9 +313,6 @@ def interface():
             fetch()
             print()
             print()
-            display()
-            print()
-            print()
 
 print("firewall started")        
 fetch()
