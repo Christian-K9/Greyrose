@@ -45,5 +45,4 @@ echo "Preventing password changes..."
 chattr +i /etc/passwd
 chattr +i /opt/splunk/etc/passwd
 chattr +i /etc/shadow
-chattr +i nftables.conf
 reboot
