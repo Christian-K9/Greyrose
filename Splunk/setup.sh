@@ -35,6 +35,7 @@ EOFA
 /opt/splunk/bin/splunk start
 echo "Splunk accounts reset."
 echo "Setting up firewall..."
+yum install -y nftables
 nft -f nftables.conf
 echo "Defaults env_keep += \"SSH_CONNECTION SSH_CLIENT SSH_TTY\"" >> /etc/sudoers
 echo "Beginning GUI setup..."
