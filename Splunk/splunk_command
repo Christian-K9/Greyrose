@@ -1,0 +1,1 @@
+wget -O splunk-10.4.3-4174a2deda5d.x86_64.rpm "https://download.splunk.com/products/splunk/releases/10.4.3/linux/splunk-10.4.3-4174a2deda5d.x86_64.rpm"
