@@ -262,6 +262,7 @@ def run_dpkg():
 
 def falling_action():
     #get splunk forwarder off the internet
+    location = os.path.join(os.getcwd(), log_name)
     print("Fetching splunk forwarder off the internet...")
     print(f"Forwarder Name: {forwarders[server]}")
     time.sleep(0.1)
@@ -286,13 +287,14 @@ def falling_action():
     
     #add monitors
     print("Adding Monitors...")
-    subprocess.run(["/opt/splunkforwarder/bin/splunk", "add", "forward-server", "forward_server", forward_server])
-    subprocess.run(["/opt/splunkforwarder/bin/splunk", "add", "monitor", "/var/log"])
-    subprocess.run(["/opt/splunkforwarder/bin/splunk", "add", "monitor", "/etc/crontab"])
-    subprocess.run(["/opt/splunkforwarder/bin/splunk", "add", "monitor", "/etc/passwd"])
-    subprocess.run(["/opt/splunkforwarder/bin/splunk", "add", "monitor", "/etc/systemd/system"])
-    subprocess.run(["/opt/splunkforwarder/bin/splunk", "add", "monitor", "/usr/lib/systemd/system"])
-    subprocess.run(["/opt/splunkforwarder/bin/splunk", "enable", "boot-start"])
+    splunk_dir = "/opt/splunkforwarder/bin/splunk"
+    monitors = ["/var/log", "/etc/systemd/system", "/usr/lib/systemd/system", location]
+    subprocess.run(["sudo", splunk_dir, "add", "forward-server", forward_server])
+    for i in monitors:
+        subprocess.run(["sudo", splunk_dir, "add", "monitor", "-auth", authentication, i])
+    subprocess.run(["sudo", splunk_dir, "enable", "boot-start"])
+    subprocess.run(["sudo", splunk_dir, "restart"])
+
     logging.debug("Added new monitors to splunk")
 
 
