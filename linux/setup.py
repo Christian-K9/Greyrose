@@ -66,9 +66,15 @@ def exposition():
     print(f"manager: {manager}")
     time.sleep(5)
     time.sleep(0.1)
-    libraries = {"libmariadb-dev": "ubuntu", "mariadb_connector-c-devel": "rehl",
-                         "python3-dev": "e", "build-essential": "ubuntu", "Development Tools": "e",
-                 "python3-venv": "e", "python3-pip": "e", "mariadb-server": "e", "mariadb-client": "e"}
+    libraries = ["libmariadb-dev", "mariadb_connector-c-devel",
+                         "python3-dev", "build-essential",
+                 "python3-venv", "python3-pip", "mariadb-server", "mariadb-client"]
+    if server == "ubuntu":
+        libraries.append("libmariadb-dev")
+        libraries.append("build-essential")
+    else:
+        libraries.append("mariadb-connector-c-devel")
+        libraries.append("'Development Tools'")
     print("synchronizing time")
     subprocess.run(["sudo", "timedatectl", "set-ntp", "true"])
     print("updating")
@@ -78,14 +84,7 @@ def exposition():
     else:
         subprocess.run(["sudo", "yum", "distro-sync"])
 
-    for i in libraries:
-            if libraries[i] != "e":
-                if server == "ubuntu":
-                    if libraries[i] == "rehl":
-                        continue
-                elif libraries[i] == "ubuntu":
-                        continue
-                    
+    for i in libraries:         
             try:
                 subprocess.run(["sudo", manager, "install", i, "-y"], check=True,)
                 time.sleep(0.1)
