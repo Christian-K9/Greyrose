@@ -63,6 +63,8 @@ def exposition():
     package_managers = {"debian": "apt-get", "ubuntu": "apt-get", "centos": "apt-get",
                "fedora": "yum", "rocky": "yum"}
     manager = package_managers[server]
+    print(f"manager: {manager}")
+    time.sleep(5)
     time.sleep(0.1)
     libraries = ["libmariadb-dev", "python3-dev", "build-essential",
                  "python3-venv", "python3-pip", "mariadb-server", "mariadb-client"]
