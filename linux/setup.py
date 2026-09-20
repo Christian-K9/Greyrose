@@ -73,7 +73,10 @@ def exposition():
     subprocess.run(["sudo", "timedatectl", "set-ntp", "true"])
     print("updating")
     subprocess.run(["sudo", manager, "update"])
-    subprocess.run(["sudo", manager, "--fix-missing-install"])
+    if server == "ubuntu":
+        subprocess.run(["sudo", manager, "--fix-missing-install"])
+    else:
+        subprocess.run(["sudo", "yum", "distro-sync"])
     for i in libraries:
             if (libraries[i] != server) or (libraries[i] != "e"):
                 continue
@@ -99,7 +102,10 @@ def exposition():
 def try_again(library, manager):
     print("trying to install library again")
     subprocess.run(["sudo", manager, "update"])
-    subprocess.run(["sudo", manager, "--fix-missing-install"])
+    if server == "ubuntu":
+        subprocess.run(["sudo", manager, "--fix-missing-install"])
+    else:
+        subprocess.run(["sudo", "yum", "distro-sync"])
     try:
         subprocess.run(["sudo", manager, "install", library, "-y"])
         print("Installation Successful")
