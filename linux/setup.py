@@ -77,16 +77,13 @@ def exposition():
         subprocess.run(["sudo", manager, "--fix-missing-install"])
     else:
         subprocess.run(["sudo", "yum", "distro-sync"])
-    ubuntu = (libraries[i] == "ubuntu")
-    ubuntu_check = (server == "ubuntu")
-    rehl = (libraries[i] == "rehl")
-    universal = (libraries[i] == "e")
+
     for i in libraries:
             if libraries[i] != "e":
-                if server != "ubuntu":
+                if server == "ubuntu":
                     if libraries[i] == "rehl":
                         continue
-                elif libraries[i] == "rehl":
+                elif libraries[i] == "ubuntu":
                         continue
                     
             try:
