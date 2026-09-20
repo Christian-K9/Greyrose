@@ -144,8 +144,12 @@ def act_I():
     subprocess.run([executable, "-m", "pip", "install", "--upgrade", "pip"])
     subprocess.run([executable, "-m", "pip", "install", "--upgrade", "pip",
                     "setuptools", "wheel"])
-    subprocess.run([executable, "-m", "pip", "download",
-        "mariadb[binary]", "setuptools", "wheel", "-d", "wheels"])
+    if server == "ubuntu":
+        subprocess.run([executable, "-m", "pip", "download",
+            "mariadb[binary]", "setuptools", "wheel", "-d", "wheels"])
+    else:
+        subprocess.run([executable, "-m", "pip", "download",
+                        "--only-binary=:all:", "mariadb[binary]", "setuptools", "wheel", "-d", "wheels"])
     time.sleep(0.1)
     subprocess.run([executable, "-m", "pip", "install", "--no-index",
         "--find-links=wheels", "setuptools wheel"])
