@@ -83,7 +83,7 @@ def exposition():
             print(f"Installation failed with exit code: {e.returncode}")
             print("--- Error Details ---")
             logging.warning(f"Failed to install Library {i}")
-            try_again(i)
+            try_again(i, manager)
 
             
 
