@@ -66,15 +66,19 @@ def exposition():
     print(f"manager: {manager}")
     time.sleep(5)
     time.sleep(0.1)
-    libraries = ["libmariadb-dev", "mariadb_connector-c-devel",
-                         "python3-dev", "build-essential",
-                 "python3-venv", "python3-pip", "mariadb-server", "mariadb-client"]
+    libraries = ["python3-dev", "python3-venv", "python3-pip", "mariadb-server"]
     if server == "ubuntu":
         libraries.append("libmariadb-dev")
         libraries.append("build-essential")
+        libraries.append("mariadb-client")
     else:
         libraries.append("mariadb-connector-c-devel")
         libraries.append("'Development Tools'")
+        libraries.append("python3-devel")
+        libraries.append("mariadb")
+        libraries.append("gcc")
+        libraries.append("gcc-c++")
+        libraries.append("make")
     print("synchronizing time")
     subprocess.run(["sudo", "timedatectl", "set-ntp", "true"])
     print("updating")
