@@ -60,7 +60,7 @@ def prologue():
 def exposition():
     #installing necessary libraries
     #putting a 0.1 second gap between each one so processes don't conflict
-    package_managers = {"debian": "apt", "ubuntu": "apt", "centos": "apt",
+    package_managers = {"debian": "apt-get", "ubuntu": "apt-get", "centos": "apt-get",
                "fedora": "yum", "rocky": "yum"}
     manager = package_managers[server]
     time.sleep(0.1)
