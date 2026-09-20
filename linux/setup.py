@@ -72,9 +72,8 @@ def exposition():
     subprocess.run(["sudo", manager, "update"])
     subprocess.run(["sudo", manager, "--fix-missing-install"])
     for i in libraries:
-        command = ["sudo", manager, "install", i, "-y"]
         try:
-            subprocess.run(["sudo", manager, "install", command, "-y"], check=True,)
+            subprocess.run(["sudo", manager, "install", i, "-y"], check=True,)
             time.sleep(0.1)
 
             print("Installation Sucessful!")
