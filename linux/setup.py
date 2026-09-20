@@ -66,29 +66,30 @@ def exposition():
     print(f"manager: {manager}")
     time.sleep(5)
     time.sleep(0.1)
-    libraries = ["libmariadb-dev", "python3-dev", "build-essential",
-                 "python3-venv", "python3-pip", "mariadb-server", "mariadb-client"]
+    libraries = {"libmariadb-dev": "ububtu", "mariadb_connector-c-devel": "rehl",
+                         "python3-dev": "e", "build-essential": "ubuntu", "Development Tools": "e",
+                 "python3-venv": "e", "python3-pip": "e", "mariadb-server": "e", "mariadb-client": "e"}
     print("synchronizing time")
-    time.sleep(5)
     subprocess.run(["sudo", "timedatectl", "set-ntp", "true"])
     print("updating")
-    time.sleep(5)
     subprocess.run(["sudo", manager, "update"])
     subprocess.run(["sudo", manager, "--fix-missing-install"])
     for i in libraries:
-        try:
-            subprocess.run(["sudo", manager, "install", i, "-y"], check=True,)
-            time.sleep(0.1)
+            if (libraries[i] != server) or (libraries[i] != "e"):
+                continue
+            try:
+                subprocess.run(["sudo", manager, "install", i, "-y"], check=True,)
+                time.sleep(0.1)
 
-            print("Installation Sucessful!")
-            logging.debug(f"Installed Library: {i}")
+                print("Installation Sucessful!")
+                logging.debug(f"Installed Library: {i}")
 
-    #in case things go wrong (WHICH THEY SHOULDN'T)
-        except subprocess.CalledProcessError as e:
-            print(f"Installation failed with exit code: {e.returncode}")
-            print("--- Error Details ---")
-            logging.warning(f"Failed to install Library {i}")
-            try_again(i, manager)
+        #in case things go wrong (WHICH THEY SHOULDN'T)
+            except subprocess.CalledProcessError as e:
+                print(f"Installation failed with exit code: {e.returncode}")
+                print("--- Error Details ---")
+                logging.warning(f"Failed to install Library {i}")
+                try_again(i, manager)
 
             
 
