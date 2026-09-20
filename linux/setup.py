@@ -66,7 +66,7 @@ def exposition():
     print(f"manager: {manager}")
     time.sleep(5)
     time.sleep(0.1)
-    libraries = ["python3-dev", "python3-pip", "mariadb-server"]
+    libraries = ["python3-pip", "mariadb-server"]
     if server == "ubuntu":
         libraries.append("libmariadb-dev")
         libraries.append("build-essential")
