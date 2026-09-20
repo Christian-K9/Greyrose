@@ -66,7 +66,7 @@ def exposition():
     print(f"manager: {manager}")
     time.sleep(5)
     time.sleep(0.1)
-    libraries = {"libmariadb-dev": "ububtu", "mariadb_connector-c-devel": "rehl",
+    libraries = {"libmariadb-dev": "ubuntu", "mariadb_connector-c-devel": "rehl",
                          "python3-dev": "e", "build-essential": "ubuntu", "Development Tools": "e",
                  "python3-venv": "e", "python3-pip": "e", "mariadb-server": "e", "mariadb-client": "e"}
     print("synchronizing time")
@@ -76,6 +76,8 @@ def exposition():
     subprocess.run(["sudo", manager, "--fix-missing-install"])
     for i in libraries:
             if (libraries[i] != server) or (libraries[i] != "e"):
+                continue
+            elif (server == "ubuntu") and (libraries[i] == "rehl"):
                 continue
             try:
                 subprocess.run(["sudo", manager, "install", i, "-y"], check=True,)
