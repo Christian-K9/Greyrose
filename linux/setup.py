@@ -72,7 +72,7 @@ def exposition():
     for i in libraries:
         command = ["sudo", manager, "install", i, "-y"]
         try:
-            result = subprocess.run(["sudo", manager, "install", "-y"] + libraries, check=True,)
+            subprocess.run(["sudo", manager, "install", command, "-y"], check=True,)
             time.sleep(0.1)
 
             print("Installation Sucessful!")
