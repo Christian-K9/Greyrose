@@ -77,11 +77,18 @@ def exposition():
         subprocess.run(["sudo", manager, "--fix-missing-install"])
     else:
         subprocess.run(["sudo", "yum", "distro-sync"])
+    ubuntu = (libraries[i] == "ubuntu")
+    ubuntu_check = (server == "ubuntu")
+    rehl = (libraries[i] == "rehl")
+    universal = (libraries[i] == "e")
     for i in libraries:
-            if (libraries[i] != server) or (libraries[i] != "e"):
-                continue
-            elif (server == "ubuntu") and (libraries[i] == "rehl"):
-                continue
+            if libraries[i] != "e":
+                if server != "ubuntu":
+                    if libraries[i] == "rehl":
+                        continue
+                elif libraries[i] == "rehl":
+                        continue
+                    
             try:
                 subprocess.run(["sudo", manager, "install", i, "-y"], check=True,)
                 time.sleep(0.1)
@@ -126,8 +133,6 @@ def act_I():
     subprocess.run(["sudo", "python3", "-m", "venv", venv_dir])
     pip_dir = f"{venv_dir}/bin/pip"
     subprocess.run(["sudo", "mkdir", "-p", "wheels"])
-    subprocess.run(["sudo", "chown", "-R", new_owner, "wheels"])
-    subprocess.run(["sudo", "chown", "-R", new_owner, venv_dir])
 
     logging.debug(f"python environment: {venv_dir} created")
 
@@ -136,6 +141,8 @@ def act_I():
     executable = "ccdc_venv/bin/python3"
     time.sleep(0.1)
     subprocess.run([executable, "-m", "pip", "install", "--upgrade", "pip"])
+    subprocess.run([executable, "-m", "pip", "install", "--upgrade", "pip",
+                    "setuptools", "wheel"])
     subprocess.run([executable, "-m", "pip", "download",
         "mariadb[binary]", "setuptools", "wheel", "-d", "wheels"])
     time.sleep(0.1)
