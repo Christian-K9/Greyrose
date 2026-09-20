@@ -68,7 +68,11 @@ def exposition():
     time.sleep(0.1)
     libraries = ["libmariadb-dev", "python3-dev", "build-essential",
                  "python3-venv", "python3-pip", "mariadb-server", "mariadb-client"]
+    print("synchronizing time")
+    time.sleep(5)
     subprocess.run(["sudo", "timedatectl", "set-ntp", "true"])
+    print("updating")
+    time.sleep(5)
     subprocess.run(["sudo", manager, "update"])
     subprocess.run(["sudo", manager, "--fix-missing-install"])
     for i in libraries:
