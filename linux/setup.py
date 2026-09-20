@@ -28,7 +28,7 @@ def prologue():
     global server
     global log_name
     #types of servers running
-    machines = ["debian", "ubuntu", "centos", "fedora"]
+    machines = ["debian", "ubuntu", "centos", "fedora", "rocky"]
     print("Server Types:")
     print(f"        {machines}")
 
@@ -60,16 +60,19 @@ def prologue():
 def exposition():
     #installing necessary libraries
     #putting a 0.1 second gap between each one so processes don't conflict
+    package_managers = {"debian": "apt", "ubuntu": "apt", "centos": "apt",
+               "fedora": "yum", "rocky": "yum"}
+    manager = package_managers[server]
     time.sleep(0.1)
     libraries = ["libmariadb-dev", "python3-dev", "build-essential",
                  "python3-venv", "python3-pip", "mariadb-server", "mariadb-client"]
     subprocess.run(["sudo", "timedatectl", "set-ntp", "true"])
-    subprocess.run(["sudo", "apt-get", "update"])
-    subprocess.run(["sudo", "apt-get", "--fix-missing-install"])
+    subprocess.run(["sudo", manager, "update"])
+    subprocess.run(["sudo", manager, "--fix-missing-install"])
     for i in libraries:
-        command = ["sudo", "apt-get", "install", i, "-y"]
+        command = ["sudo", manager, "install", i, "-y"]
         try:
-            result = subprocess.run(["sudo", "apt-get", "install", "-y"] + libraries, check=True,)
+            result = subprocess.run(["sudo", manager, "install", "-y"] + libraries, check=True,)
             time.sleep(0.1)
 
             print("Installation Sucessful!")
@@ -85,12 +88,12 @@ def exposition():
             
 
 #apparently nothing wants to work :[
-def try_again(library):
+def try_again(library, manager):
     print("trying to install library again")
-    subprocess.run(["sudo", "apt-get", "update"])
-    subprocess.run(["sudo", "apt-get", "--fix-missing-install"])
+    subprocess.run(["sudo", manager, "update"])
+    subprocess.run(["sudo", manager, "--fix-missing-install"])
     try:
-        subprocess.run(["sudo", "apt-get", "install", library, "-y"])
+        subprocess.run(["sudo", manager, "install", library, "-y"])
         print("Installation Successful")
         logging.info(f"reattempt to install {library} successful")
 
