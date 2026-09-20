@@ -122,11 +122,12 @@ def act_I():
     #side note: this is optional. not all linux machines have undependable python libraries
     venv_dir = "ccdc_venv"
     print("creating python environment")
+    time.sleep(5)
     subprocess.run(["sudo", "python3", "-m", "venv", venv_dir])
     pip_dir = f"{venv_dir}/bin/pip"
-    subprocess.run(["sudo", "chown", "-R", new_owner, venv_dir])
     subprocess.run(["sudo", "mkdir", "-p", "wheels"])
     subprocess.run(["sudo", "chown", "-R", new_owner, "wheels"])
+    subprocess.run(["sudo", "chown", "-R", new_owner, venv_dir])
 
     logging.debug(f"python environment: {venv_dir} created")
 
@@ -134,6 +135,7 @@ def act_I():
     print("installing python dependencies")
     executable = "ccdc_venv/bin/python3"
     time.sleep(0.1)
+    subprocess.run([executable, "-m", "pip", "install", "--upgrade", "pip"])
     subprocess.run([executable, "-m", "pip", "download",
         "mariadb[binary]", "setuptools", "wheel", "-d", "wheels"])
     time.sleep(0.1)
@@ -143,6 +145,9 @@ def act_I():
     subprocess.run([executable, "-m", "pip", "install", "--no-index",
         "--find-links=wheels", "mariadb[binary]"])
     time.sleep(0.1)
+
+    subprocess.run(["sudo", "chown", "-R", new_owner, "wheels"])
+    subprocess.run(["sudo", "chown", "-R", new_owner, venv_dir])
 
     logging.debug(f"python depenencies installed")
 
