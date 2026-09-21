@@ -64,7 +64,7 @@ def exposition():
                "fedora": "yum", "rocky": "yum"}
     manager = package_managers[server]
     time.sleep(0.1)
-    libraries = ["python3-pip", "mariadb-server", "wget", "nftables"]
+    libraries = ["python3-pip", "mariadb-server", "wget", "nftables", "gcc"]
     if server == "ubuntu":
         libraries.append("libmariadb-dev")
         libraries.append("build-essential")
@@ -77,7 +77,6 @@ def exposition():
         libraries.append("'Development Tools'")
         libraries.append("python3-devel")
         libraries.append("mariadb")
-        libraries.append("gcc")
         libraries.append("gcc-c++")
         libraries.append("make")
 
