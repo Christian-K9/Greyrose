@@ -297,12 +297,16 @@ def run_dpkg():
     return False
 
 def falling_action():
+    if (server == "ubuntu") or (server == "debian"):
+        package = ".deb"
+    else:
+        package = ".rpm"
     #get splunk forwarder off the internet
     location = os.path.join(os.getcwd(), log_name)
     print("Fetching splunk forwarder off the internet...")
     print(f"Forwarder Name: {forwarders[server]}")
     time.sleep(0.1)
-    subprocess.run(["sudo", "wget", "-O", "/opt/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.deb", forwarders[server]])
+    subprocess.run(["sudo", "wget", "-O", f"/opt/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.{package}", forwarders[server]])
     time.sleep(0.1)
     if run_dpkg() == False:
         print("Splunk Forwarders Failed to install")
