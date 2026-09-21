@@ -281,20 +281,24 @@ def climax():
 
     logging.debug("nftables service started and enabled")
 
-def run_dpkg():
-    cmd = ["sudo", "dpkg", "-i", "/opt/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.deb"]
-    for i in range(5):
+def run_dpkg(splunkforwarder):
+    if (server == "ubuntu") or (server == "debian"):
+        cmd = ["sudo", "dpkg", "-i", splunkforwarder]
+        for i in range(5):
+            result = subprocess.run(cmd, capture_output=True, text=True)
+            if result.returncode == 0:
+                print("Installation successful!")
+                logging.info(f"Installation attempt {i} successful")
+                return True
+            if "lock" in result.stderr or "locked" in result.stderr:
+                print("dpkg is locked by another process. Retrying in 5s")
+                time.sleep(5)
+            else:
+                print("dpkg returned with uknown error")
+                logging.error("dpkg returned with unknown error")
+    else:
+        cmd = ["sudo", "rpm", "ivh", splunkforwarder]
         result = subprocess.run(cmd, capture_output=True, text=True)
-        if result.returncode == 0:
-            print("Installation successful!")
-            logging.info(f"Installation attempt {i} successful")
-            return True
-        if "lock" in result.stderr or "locked" in result.stderr:
-            print("dpkg is locked by another process. Retrying in 5s")
-            time.sleep(5)
-        else:
-            print("dpkg returned with uknown error")
-            logging.error("dpkg returned with unknown error")
     return False
 
 def falling_action():
@@ -307,9 +311,10 @@ def falling_action():
     print("Fetching splunk forwarder off the internet...")
     print(f"Forwarder Name: {forwarders[server]}")
     time.sleep(0.1)
-    subprocess.run(["sudo", "wget", "-O", f"/opt/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.{package}", forwarders[server]])
+    splunkforwarder = f"/opt/splunkforwarder-10.0.3-adbac1c8811c-linux-amd64.{package}"
+    subprocess.run(["sudo", "wget", "-O", splunkforwarder, forwarders[server]])
     time.sleep(0.1)
-    if run_dpkg() == False:
+    if run_dpkg(splunkforwarder) == False:
         print("Splunk Forwarders Failed to install")
         logging.error("Python Forwarders Failed to Depackage")
         sys.exit()
