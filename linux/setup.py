@@ -66,7 +66,7 @@ def exposition():
     print(f"manager: {manager}")
     time.sleep(5)
     time.sleep(0.1)
-    libraries = ["python3-pip", "mariadb-server"]
+    libraries = ["python3-pip", "mariadb-server", "wget"]
     if server == "ubuntu":
         libraries.append("libmariadb-dev")
         libraries.append("build-essential")
@@ -80,6 +80,7 @@ def exposition():
         libraries.append("gcc")
         libraries.append("gcc-c++")
         libraries.append("make")
+
     print("synchronizing time")
     subprocess.run(["sudo", "timedatectl", "set-ntp", "true"])
     print("updating")
@@ -89,9 +90,12 @@ def exposition():
     else:
         subprocess.run(["sudo", "yum", "distro-sync"])
 
-    for i in libraries:         
+    for i in libraries:
+            command = ["sudo", manager, "install", i, "-y"]
+            if (server != "ubuntu") and (i == "mariadb"):
+                command.append("--allowerasing") 
             try:
-                subprocess.run(["sudo", manager, "install", i, "-y"], check=True,)
+                subprocess.run([command], check=True,)
                 time.sleep(0.1)
 
                 print("Installation Sucessful!")
