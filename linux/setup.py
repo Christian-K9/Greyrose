@@ -152,7 +152,7 @@ def act_I():
                         "--only-binary=:all:", "mariadb[binary]", "setuptools", "wheel", "-d", "wheels"])
     time.sleep(0.1)
     subprocess.run([executable, "-m", "pip", "install", "--no-index",
-        "--find-links=wheels", "setuptools wheel"])
+        "--find-links=wheels", "setuptools" "wheel"])
     time.sleep(0.1)
     subprocess.run([executable, "-m", "pip", "install", "--no-index",
         "--find-links=wheels", "mariadb[binary]"])
