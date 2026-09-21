@@ -145,7 +145,7 @@ def act_I():
     subprocess.run([executable, "-m", "pip", "install", "--upgrade", "pip"])
     subprocess.run([executable, "-m", "pip", "install", "--upgrade", "pip",
                     "setuptools", "wheel"])
-    subprocess.run([executable, "-m", "pip", "install", "--force-reinstall", "mariadb=1.0.11"])
+    subprocess.run([executable, "-m", "pip", "install", "--force-reinstall", "mariadb==1.0.11"])
     subprocess.run([executable, "-m", "pip", "download",
                         "--only-binary=:all:", "mariadb[binary]", "setuptools", "wheel", "-d", "wheels"])
     time.sleep(0.1)
