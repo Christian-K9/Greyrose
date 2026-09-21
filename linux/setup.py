@@ -315,7 +315,7 @@ def falling_action():
     subprocess.run(["sudo", "wget", "-O", splunkforwarder, forwarders[server]])
     time.sleep(0.1)
     if run_dpkg(splunkforwarder) == False:
-        print("Splunk Forwarders Failed to install")
+        print("Splunk Forwarders Failed to Depackage")
         logging.error("Python Forwarders Failed to Depackage")
         sys.exit()
     time.sleep(0.1)
