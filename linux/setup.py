@@ -298,9 +298,9 @@ def run_dpkg():
 
 def falling_action():
     if (server == "ubuntu") or (server == "debian"):
-        package = ".deb"
+        package = "deb"
     else:
-        package = ".rpm"
+        package = "rpm"
     #get splunk forwarder off the internet
     location = os.path.join(os.getcwd(), log_name)
     print("Fetching splunk forwarder off the internet...")
