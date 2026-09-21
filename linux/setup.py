@@ -91,11 +91,8 @@ def exposition():
         subprocess.run(["sudo", "yum", "distro-sync"])
 
     for i in libraries:
-            command = ["sudo", manager, "install", i, "-y"]
-            if (server != "ubuntu") and (i == "mariadb"):
-                command.append("--allowerasing") 
             try:
-                subprocess.run([command], check=True,)
+                subprocess.run(["sudo", manager, "install", i, "-y"], check=True,)
                 time.sleep(0.1)
 
                 print("Installation Sucessful!")
@@ -119,7 +116,7 @@ def try_again(library, manager):
     else:
         subprocess.run(["sudo", "yum", "distro-sync"])
     try:
-        subprocess.run(["sudo", manager, "install", library, "-y"])
+        subprocess.run(["sudo", manager, "install", library, "-y", "--allowerasing"])
         print("Installation Successful")
         logging.info(f"reattempt to install {library} successful")
 
