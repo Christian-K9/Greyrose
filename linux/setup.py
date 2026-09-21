@@ -297,7 +297,7 @@ def run_dpkg(splunkforwarder):
                 print("dpkg returned with uknown error")
                 logging.error("dpkg returned with unknown error")
     else:
-        cmd = ["sudo", "rpm", "ivh", splunkforwarder]
+        cmd = ["sudo", "rpm", "-ivh", splunkforwarder]
         result = subprocess.run(cmd, capture_output=True, text=True)
     return False
 
@@ -334,7 +334,7 @@ def falling_action():
     #add monitors
     print("Adding Monitors...")
     splunk_dir = "/opt/splunkforwarder/bin/splunk"
-    monitors = ["/var/log", "/etc/systemd/system", "/usr/lib/systemd/system", location]
+    monitors = ["/var/log", "/etc/systemd/system", "/usr/lib/systemd/system", location, "etc/passwd"]
     subprocess.run(["sudo", splunk_dir, "add", "forward-server", forward_server])
     for i in monitors:
         subprocess.run(["sudo", splunk_dir, "add", "monitor", "-auth", authentication, i])
