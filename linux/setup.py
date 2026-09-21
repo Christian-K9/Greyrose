@@ -66,7 +66,7 @@ def exposition():
     print(f"manager: {manager}")
     time.sleep(5)
     time.sleep(0.1)
-    libraries = ["python3-pip", "mariadb-server", "wget"]
+    libraries = ["python3-pip", "mariadb-server", "wget", "dpkg"]
     if server == "ubuntu":
         libraries.append("libmariadb-dev")
         libraries.append("build-essential")
@@ -310,7 +310,7 @@ def falling_action():
     time.sleep(0.1)
     if run_dpkg() == False:
         print("Splunk Forwarders Failed to install")
-        logging.error("Python Forwarders Failed to Install")
+        logging.error("Python Forwarders Failed to Depackage")
         sys.exit()
     time.sleep(0.1)
     logging.debug("Fetched splunk forwarder off the internet")
