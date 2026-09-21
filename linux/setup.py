@@ -64,7 +64,7 @@ def exposition():
                "fedora": "yum", "rocky": "yum"}
     manager = package_managers[server]
     time.sleep(0.1)
-    libraries = ["python3-pip", "mariadb-server", "wget"]
+    libraries = ["python3-pip", "mariadb-server", "wget", "nftables"]
     if server == "ubuntu":
         libraries.append("libmariadb-dev")
         libraries.append("build-essential")
@@ -145,11 +145,7 @@ def act_I():
     subprocess.run([executable, "-m", "pip", "install", "--upgrade", "pip"])
     subprocess.run([executable, "-m", "pip", "install", "--upgrade", "pip",
                     "setuptools", "wheel"])
-    if server == "ubuntu":
-        subprocess.run([executable, "-m", "pip", "download",
-            "mariadb[binary]", "setuptools", "wheel", "-d", "wheels"])
-    else:
-        subprocess.run([executable, "-m", "pip", "download",
+    subprocess.run([executable, "-m", "pip", "download",
                         "--only-binary=:all:", "mariadb[binary]", "setuptools", "wheel", "-d", "wheels"])
     time.sleep(0.1)
     subprocess.run([executable, "-m", "pip", "install", "--no-index",
