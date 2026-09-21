@@ -8,12 +8,12 @@ import re
 import getpass
 
 #assign splunk forwarder based on machine
-forwarders = {"debian": "https://download.splunk.com/products/universalforwarder/releases/10.4.2/linux/splunkforwarder-10.4.2-33c3bf42cd73-linux-arm64.deb",
-    "ubuntu": "https://download.splunk.com/products/universalforwarder/releases/10.4.2/linux/splunkforwarder-10.4.2-33c3bf42cd73-linux-arm64.deb",
-    "centos": "https://download.splunk.com/products/universalforwarder/releases/10.4.2/linux/splunkforwarder-10.4.2-33c3bf42cd73-linux-arm64.deb",
-    "fedora": "https://download.splunk.com/products/universalforwarder/releases/10.4.2/linux/splunkforwarder-10.4.2-33c3bf42cd73.aarch64.rpm",
-    "rocky": "https://download.splunk.com/products/universalforwarder/releases/10.4.2/linux/splunkforwarder-10.4.2-33c3bf42cd73.aarch64.rpm",
-    "oracle": "https://download.splunk.com/products/universalforwarder/releases/10.4.2/linux/splunkforwarder-10.4.2-33c3bf42cd73.aarch64.rpm"
+forwarders = {"debian": "https://download.splunk.com/products/universalforwarder/releases/10.4.2/linux/splunkforwarder-10.4.2-33c3bf42cd73-linux-amd64.deb",
+    "ubuntu": "https://download.splunk.com/products/universalforwarder/releases/10.4.2/linux/splunkforwarder-10.4.2-33c3bf42cd73-linux-amd64.deb",
+    "centos": "https://download.splunk.com/products/universalforwarder/releases/10.4.2/linux/splunkforwarder-10.4.2-33c3bf42cd73-linux-amd64.deb",
+    "fedora": "https://download.splunk.com/products/universalforwarder/releases/10.4.2/linux/splunkforwarder-10.4.2-33c3bf42cd73.x86_64.rpm",
+    "rocky": "https://download.splunk.com/products/universalforwarder/releases/10.4.2/linux/splunkforwarder-10.4.2-33c3bf42cd73.x86_64.rpm",
+    "oracle": "https://download.splunk.com/products/universalforwarder/releases/10.4.2/linux/splunkforwarder-10.4.2-33c3bf42cd73.x86_64.rpm"
     }
 
 new_owner = "root:root"
@@ -66,12 +66,13 @@ def exposition():
     print(f"manager: {manager}")
     time.sleep(5)
     time.sleep(0.1)
-    libraries = ["python3-pip", "mariadb-server", "wget", "dpkg"]
+    libraries = ["python3-pip", "mariadb-server", "wget"]
     if server == "ubuntu":
         libraries.append("libmariadb-dev")
         libraries.append("build-essential")
         libraries.append("mariadb-client")
         libraries.append("python3-venv")
+        libraries.append("dpkg")
     else:
         libraries.append("mariadb-connector-c-devel")
         libraries.append("'Development Tools'")
