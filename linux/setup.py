@@ -284,6 +284,8 @@ def climax():
 def run_dpkg(splunkforwarder):
     if (server == "ubuntu") or (server == "debian"):
         cmd = ["sudo", "dpkg", "-i", splunkforwarder]
+    else:
+        cmd = ["sudo", "rpm", "-ivh", splunkforwarder]
         for i in range(5):
             result = subprocess.run(cmd, capture_output=True, text=True)
             if result.returncode == 0:
@@ -296,9 +298,6 @@ def run_dpkg(splunkforwarder):
             else:
                 print("dpkg returned with uknown error")
                 logging.error("dpkg returned with unknown error")
-    else:
-        cmd = ["sudo", "rpm", "-ivh", splunkforwarder]
-        result = subprocess.run(cmd, capture_output=True, text=True)
     return False
 
 def falling_action():
