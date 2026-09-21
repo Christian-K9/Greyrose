@@ -190,7 +190,7 @@ def add_ip():
         print("must be a valid ip address")
         return
     connection_type,transmission_value = check_additional_requirements()
-    string_arg = f'/# END: ACCEPTED IP CONNECTIONS/i \\\t {ip_address},'
+    string_arg = f'/192.51.100.1,/i \\\t {ip_address},'
     subprocess.run(["sudo", "sed", "-i",
         string_arg, "nftables.conf"])
     keyword = f'{ip_address},'
@@ -211,7 +211,7 @@ def remove_ip():
         print("must be a valid ip address")
         return
     connection_type,transmission_value = check_additional_requirements()
-    string_arg = f'/# END: BLOCKED IP CONNECTIONS/i \\\t{ip_address},'
+    string_arg = f'/192.0.2.1,/i \\\t{ip_address},'
     subprocess.run(["sudo", "sed", "-i",
         string_arg, "nftables.conf"])
     keyword = f'{ip_address},'
