@@ -84,10 +84,12 @@ def exposition():
     subprocess.run(["sudo", "timedatectl", "set-ntp", "true"])
     print("updating")
     subprocess.run(["sudo", manager, "update"])
+    time.sleep(1)
     if server == "ubuntu":
         subprocess.run(["sudo", manager, "--fix-missing-install"])
     else:
         subprocess.run(["sudo", "yum", "distro-sync"])
+    time.sleep(1)
 
     for i in libraries:
             try:
