@@ -84,7 +84,7 @@ def exposition():
     subprocess.run(["sudo", "timedatectl", "set-ntp", "true"])
     print("updating")
     subprocess.run(["sudo", manager, "update"])
-    time.sleep(1)
+    time.sleep(3)
     if server == "ubuntu":
         subprocess.run(["sudo", manager, "--fix-missing-install"])
     else:
