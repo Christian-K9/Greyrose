@@ -72,7 +72,6 @@ def exposition():
         libraries.append("python3-venv")
         libraries.append("python3-dev")
         libraries.append("dpkg")
-        libraries.append("rpm")
     else:
         libraries.append("mariadb-connector-c-devel")
         libraries.append("'Development Tools'")
@@ -284,18 +283,18 @@ def run_dpkg(splunkforwarder):
         cmd = ["sudo", "dpkg", "-i", splunkforwarder]
     else:
         cmd = ["sudo", "rpm", "-ivh", splunkforwarder]
-        for i in range(5):
-            result = subprocess.run(cmd, capture_output=True, text=True)
-            if result.returncode == 0:
-                print("Installation successful!")
-                logging.info(f"Installation attempt {i} successful")
-                return True
-            if "lock" in result.stderr or "locked" in result.stderr:
-                print("dpkg is locked by another process. Retrying in 5s")
-                time.sleep(5)
-            else:
-                print("dpkg returned with uknown error")
-                logging.error("dpkg returned with unknown error")
+    for i in range(5):
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode == 0:
+            print("Installation successful!")
+            logging.info(f"Installation attempt {i} successful")
+            return True
+        if "lock" in result.stderr or "locked" in result.stderr:
+            print("dpkg is locked by another process. Retrying in 5s")
+            time.sleep(5)
+        else:
+            print("dpkg returned with uknown error")
+            logging.error("dpkg returned with unknown error")
     return False
 
 def falling_action():
