@@ -72,6 +72,7 @@ def exposition():
         libraries.append("python3-venv")
         libraries.append("python3-dev")
         libraries.append("dpkg")
+        libraries.append("rpm")
     else:
         libraries.append("mariadb-connector-c-devel")
         libraries.append("'Development Tools'")
