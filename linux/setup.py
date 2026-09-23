@@ -278,6 +278,8 @@ def climax():
     logging.debug("nftables service started and enabled")
 
 def run_dpkg(splunkforwarder):
+    print(f"Depackaging Splunk on : {server} server")
+    time.sleep(5)
     if (server == "ubuntu") or (server == "debian"):
         cmd = ["sudo", "dpkg", "-i", splunkforwarder]
     else:
