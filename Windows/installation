@@ -11,8 +11,8 @@ powershell.exe -ExecutionPolicy Bypass -File .\setup.ps1
 [Steps to install]
 
 1. Installation:
-    either go to browser and type in: "https://download.splunk.com/products/universalforwarder/releases/10.0.1/windows/$forwarder/splunkforwarder-10.0.1-c486717c322b-windows-x64.msi"
-    or go to terminal and enter the following command through Windows Powershell: Invoke-WebRequest "https://download.splunk.com/products/universalforwarder/releases/10.0.1/windows/$forwarder/splunkforwarder-10.0.1-c486717c322b-windows-x64.msi" -OutFile splunkforwarder.msi
+    either go to browser and type in: "https://download.splunk.com/products/universalforwarder/releases/10.0.1/windows/splunkforwarder-10.0.1-c486717c322b-windows-x64.msi"
+    or go to terminal and enter the following command through Windows Powershell: Invoke-WebRequest "https://download.splunk.com/products/universalforwarder/releases/10.0.1/windows/splunkforwarder-10.0.1-c486717c322b-windows-x64.msi" -OutFile splunkforwarder.msi
 2. Add Forwarders:
     enter in ip address and ports of forwarders
 3. Traversal
