@@ -163,10 +163,9 @@ def checkCrontab():
         f.close()
         if len(contents) > 0:
             if (contents != "\n"):
-                #f = open("/etc/crontab", "w")
-                #f.write("\n")
-                #f.close()
-                subprocess.run(["sudo", "truncate", "-s", "0", "/etc/crontab"])
+                f = open("/etc/crontab", "w")
+                f.write("\n")
+                f.close()
                 logging.error(f"contents of /etc/crontab were not empty")
                 logging.info(f"contents of /etc/crontab removed")
 
