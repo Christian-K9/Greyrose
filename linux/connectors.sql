@@ -56,6 +56,14 @@ CREATE TABLE IF NOT EXISTS blacklist (
 INSERT INTO allowed_services (name)
 VALUES ("Greyrose.service");
 
+INSERT INTO allowed_users (name)
+VALUES ("sysadmin");
+
+INSERT INTO allowed_users (name)
+VALUES ("root");
+
+INSERT INTO allowed_users (name)
+VALUES ("splunkfwd");
 --start: default_ports
 
 --default_ports
