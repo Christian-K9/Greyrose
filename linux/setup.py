@@ -113,7 +113,7 @@ def try_again(library, manager):
     time.sleep(3)
     try:
         if server == "fedora":
-            subprocess.run(["sudo", manager, "install", library, "-y", "--allow-erasing"])
+            subprocess.run(["sudo", manager, "install", library, "-y", "--allowerasing"])
         else:
             subprocess.run(["sudo", manager, "install", library, "-y"])
 
