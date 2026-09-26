@@ -1,0 +1,22 @@
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# START: LOCAL CONNECTION
+-A INPUT -i lo -j ACCEPT
+
+# START: ICMP CONNECTION
+-A INPUT -p icmp -j ACCEPT
+
+# START: SPECIAL RULES (Stateful connections, Whitelist, Blacklist)
+-A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -m set --match-set whitelist src -j ACCEPT
+-A INPUT -m set --match-set blacklist src -j DROP
+
+# START: ACCEPTED SPLUNK PORT CONNECTIONS
+-A INPUT -p tcp -m tcp --dport 8000 -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 8089 -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 9997 -j ACCEPT
+
+COMMIT
