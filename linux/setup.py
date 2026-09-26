@@ -138,7 +138,7 @@ def act_I():
     print("creating python environment")
     time.sleep(5)
     if server == "rocky":
-        python = "python3.8"
+        python = "python3.11"
     else:
         python = "python3"
     subprocess.run(["sudo", python, "-m", "venv", venv_dir])
