@@ -24,7 +24,7 @@ password = ""
 server = ""
 log_name = ""
 
-def prologue(server_type=None, input_user=None, input_pass=None):
+def prologue():
     global username
     global password
     global server
@@ -33,24 +33,16 @@ def prologue(server_type=None, input_user=None, input_pass=None):
     print("Server Types:")
     print(f"        {machines}")
 
-    if server_type != None:
-        server = server_type
-    else:
-        server = ""
-        #machine is based on user input
-        while server not in machines:
-            server = input("What Server Are You Running? ")
-            if server.lower() not in machines:
-                print("Not Valid Operating System Name")
 
-    if input_user != None:
-        username = input_user
-    else:
-        username = input("Enter Centralized Username (Can be sysadmin): ")
-    if input_pass != None:
-        password = input_pass
-    else:
-        password = getpass.getpass("Enter Centralized Password: ")
+    server = ""
+    #machine is based on user input
+    while server not in machines:
+        server = input("What Server Are You Running? ")
+        if server.lower() not in machines:
+            print("Not Valid Operating System Name")
+
+    username = input("Enter Centralized Username (Can be sysadmin): ")
+    password = getpass.getpass("Enter Centralized Password: ")
 
     #get name of operating system via hostnamectl
     result = subprocess.run(["hostnamectl"], capture_output=True, text=True)
@@ -470,16 +462,6 @@ if len(sys.argv) > 1:
         resolution()
     elif (argument == "-f") or (argument == "--finale"):
         epilogue()
-    elif (sys.argv[1] in machines) and (sys.argv[2] != None) and (sys.argv[3] != None):
-        prologue(server_type=sys.argv[1], input_user=sys.argv[2], input_pass=sys.argv[3])
-        exposition()
-        act_I()
-        act_II()
-        act_III()
-        climax()
-        falling_action()
-        resolution()
-        epilogue
     else:
         print(f"{argument}: Not valid script argument")
 else:
