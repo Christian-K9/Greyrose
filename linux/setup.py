@@ -85,7 +85,7 @@ def exposition():
     subprocess.run(["sudo", "timedatectl", "set-ntp", "true"])
     print("updating")
     subprocess.run(["sudo", manager, "update"])
-    time.sleep(3)
+    time.sleep(5)
 
     for i in libraries:
             try:
@@ -100,7 +100,7 @@ def exposition():
                 print(f"Installation failed with exit code: {e.returncode}")
                 print("--- Error Details ---")
                 logging.warning(f"Failed to install Library {i}")
-                time.sleep(3)
+                time.sleep(5)
                 try_again(i, manager)
 
             
