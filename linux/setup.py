@@ -145,7 +145,7 @@ def act_I():
 
     #installing python dependencies
     print("installing python dependencies")
-    executable = "ccdc_venv/bin/python3"
+    executable = "/opt/ccdc_venv/bin/python3"
     time.sleep(0.1)
     subprocess.run([executable, "-m", "pip", "install", "--upgrade", "pip"])
     subprocess.run([executable, "-m", "pip", "install", "--upgrade", "pip",
