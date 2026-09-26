@@ -109,13 +109,8 @@ def try_again(library, manager):
     print("trying to install library again")
     subprocess.run(["sudo", manager, "update"])
     time.sleep(3)
-    if server == "ubuntu":
-        subprocess.run(["sudo", manager, "--fix-missing-install"])
-        time.sleep(1)
-    else:
-        subprocess.run(["sudo", "yum", "distro-sync"])
     try:
-        subprocess.run(["sudo", manager, "install", library, "-y", "--allowerasing"])
+        subprocess.run(["sudo", manager, "install", library, "-y"])
         print("Installation Successful")
         logging.info(f"reattempt to install {library} successful")
 
