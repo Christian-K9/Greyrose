@@ -335,7 +335,7 @@ def falling_action():
     monitors = ["/var/log", "/etc/systemd/system", "/usr/lib/systemd/system", location, "etc/passwd"]
     subprocess.run(["sudo", splunk_dir, "add", "forward-server", forward_server, "-auth", splunk_authentication])
     for i in monitors:
-        subprocess.run(["sudo", splunk_dir, "add", "monitor", "-auth", splunk_authentication, i])
+        subprocess.run(["sudo", splunk_dir, "add", "monitor", i, "-auth", splunk_authentication])
     subprocess.run(["sudo", splunk_dir, "enable", "boot-start"])
     subprocess.run(["sudo", splunk_dir, "restart"])
 
