@@ -248,6 +248,7 @@ def act_III():
     #create service
     subprocess.run(["sudo", "cp", "Greyrose.service", "/etc/systemd/system/Greyrose.service"])
     subprocess.run(["sudo", "cp", "tracker.py", "/usr/local/bin/tracker.py"])
+    subprocess.run(["sudo", "cp", "db.conf", "/usr/local/bin/db.conf"])
     subprocess.run(["sudo", "chmod", "700", "/usr/local/bin/tracker.py"])
     subprocess.run(["sudo", "mv", "ccdc_venv", "/opt/ccdc_venv"])
     subprocess.run(["sudo", "mv", "wheels", "/opt/wheels"])
