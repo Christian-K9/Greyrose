@@ -76,7 +76,6 @@ def exposition():
         libraries.append("dpkg")
     else:
         libraries.append("mariadb-connector-c-devel")
-        libraries.append("'Development Tools'")
         libraries.append("python3-devel")
         libraries.append("mariadb")
         libraries.append("gcc-c++")
@@ -353,14 +352,12 @@ def resolution():
     print("Adding firewall command")
     subprocess.run(["sudo", "chown", new_owner, "/usr/local/bin/firewall"])
     subprocess.run(["sudo", "chmod", "700", "/usr/local/bin/firewall"])
-    subprocess.run(["sudo", "mv", "db.conf", "/usr/local/bin/db.conf"])
     logging.debug("Firewall command set")
 
     #move quarentine to root directory
     subprocess.run(["sudo", "mv", "quarantine", "/root/quarantine"])
     subprocess.run(["sudo", "chown", "root:root", "/root/quarantine"])
     subprocess.run(["sudo", "chmod", "600", "/root/quarantine"])
-    subprocess.run(["sudo", "cp", "db.conf", "/usr/local/bin/db.conf"])
 
 def epilogue():
     print("Final Check....")
@@ -373,7 +370,7 @@ def epilogue():
     locations = {"connectors.sql": "script", "firewall": "script", "Greyrose.service" : "non-script",
                 "nftables.conf": "non-script", "setup.py": "script", "tracker.py": "script",
                  "/opt/wheels": "non-script", "/opt/ccdc_venv": "script", f"{log_name}.log": "non-script",
-                "/usr/local/bin/db.conf": "non-script", "/usr/local/bin/firewall": "script",
+                "db.conf": "non-script", "/usr/local/bin/firewall": "script",
                  "/usr/local/bin/tracker.py": "script", "/etc/systemd/system/Greyrose.service": "script",
                  ".setup.py.swp": "non-script"}
     
