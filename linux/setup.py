@@ -134,12 +134,12 @@ def try_again(library, manager):
 def act_I():
     #create python environment to prevent any dependency issues
     #side note: this is optional. not all linux machines have undependable python libraries
-    venv_dir = "ccdc_venv"
+    venv_dir = "/opt/ccdc_venv"
     print("creating python environment")
     time.sleep(5)
     subprocess.run(["sudo", "python3", "-m", "venv", venv_dir])
     pip_dir = f"{venv_dir}/bin/pip"
-    subprocess.run(["sudo", "mkdir", "-p", "wheels"])
+    subprocess.run(["sudo", "mkdir", "-p", "/opt/wheels"])
 
     logging.debug(f"python environment: {venv_dir} created")
 
@@ -152,16 +152,16 @@ def act_I():
                     "setuptools", "wheel"])
     subprocess.run([executable, "-m", "pip", "install", "--force-reinstall", "mariadb==1.0.11"])
     subprocess.run([executable, "-m", "pip", "download",
-                        "--only-binary=:all:", "mariadb[binary]", "setuptools", "wheel", "-d", "wheels"])
+                        "--only-binary=:all:", "mariadb[binary]", "setuptools", "wheel", "-d", "/opt/wheels"])
     time.sleep(0.1)
     subprocess.run([executable, "-m", "pip", "install", "--no-index",
-        "--find-links=wheels", "setuptools" "wheel"])
+        "--find-links=/opt/wheels", "setuptools" "wheel"])
     time.sleep(0.1)
     subprocess.run([executable, "-m", "pip", "install", "--no-index",
-        "--find-links=wheels", "mariadb[binary]"])
+        "--find-links=/opt/wheels", "mariadb[binary]"])
     time.sleep(0.1)
 
-    subprocess.run(["sudo", "chown", "-R", new_owner, "wheels"])
+    subprocess.run(["sudo", "chown", "-R", new_owner, "/opt/wheels"])
     subprocess.run(["sudo", "chown", "-R", new_owner, venv_dir])
 
     logging.debug(f"python depenencies installed")
@@ -246,10 +246,6 @@ def act_II():
 
 def act_III():
     #create service
-    venv_dir = "ccdc_venv"
-    python_executable = f"{venv_dir}/bin/python3"
-    new_location = f's|^ExecStart=.*|ExecStart={python_executable}| /usr/loca/bin/tracker.py'
-    subprocess.run(["sudo", "sed", "-i", new_location, "Greyrose.service"])
     subprocess.run(["sudo", "cp", "Greyrose.service", "/etc/systemd/system/Greyrose.service"])
     subprocess.run(["sudo", "cp", "tracker.py", "/usr/local/bin/tracker.py"])
     subprocess.run(["sudo", "chmod", "700", "/usr/local/bin/tracker.py"])
