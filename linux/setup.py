@@ -113,8 +113,10 @@ def exposition():
 def try_again(library, manager):
     print("trying to install library again")
     subprocess.run(["sudo", manager, "update"])
+    time.sleep(3)
     if server == "ubuntu":
         subprocess.run(["sudo", manager, "--fix-missing-install"])
+        time.sleep(1)
     else:
         subprocess.run(["sudo", "yum", "distro-sync"])
     try:
