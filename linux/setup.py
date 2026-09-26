@@ -253,6 +253,8 @@ def act_III():
     subprocess.run(["sudo", "cp", "Greyrose.service", "/etc/systemd/system/Greyrose.service"])
     subprocess.run(["sudo", "cp", "tracker.py", "/usr/local/bin/tracker.py"])
     subprocess.run(["sudo", "chmod", "700", "/usr/local/bin/tracker.py"])
+    subprocess.run(["sudo", "mv", "ccdc_venv", "/opt/ccdc_venv"])
+    subprocess.run(["sudo", "mv", "wheels", "/opt/wheels"])
     subprocess.run(["sudo", "systemctl", "daemon-reload"])
     subprocess.run(["sudo", "systemctl", "enable", "Greyrose.service"])
     subprocess.run(["sudo", "systemctl", "start", "Greyrose.service"])
@@ -350,10 +352,6 @@ def resolution():
     subprocess.run(["sudo", "chmod", "700", "start.py"])
     subprocess.run(["sudo", "chmod", "700", "tracker.py"])
     logging.debug("Applying permissions to files inside Greyrose Directory")
-
-    #move python virtual environment to /opt
-    subprocess.run(["sudo", "mv", "ccdc_venv", "/opt/ccdc_venv"])
-    subprocess.run(["sudo", "mv", "wheels", "/opt/wheels"])
 
     #Add firewall to sbin
     print("Adding firewall command")
