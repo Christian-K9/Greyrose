@@ -16,31 +16,41 @@ forwarders = {"debian": "https://download.splunk.com/products/universalforwarder
     "oracle": "https://download.splunk.com/products/universalforwarder/releases/10.4.2/linux/splunkforwarder-10.4.2-33c3bf42cd73.x86_64.rpm"
     }
 
+machines = ["debian", "ubuntu", "centos", "fedora", "rocky"]
+
 new_owner = "root:root"
 username = ""
 password = ""
 server = ""
 log_name = ""
 
-def prologue():
+def prologue(server_type=None, input_user=None, input_pass=None):
     global username
     global password
     global server
     global log_name
     #types of servers running
-    machines = ["debian", "ubuntu", "centos", "fedora", "rocky"]
     print("Server Types:")
     print(f"        {machines}")
 
-    server = ""
-    #machine is based on user input
-    while server not in machines:
-        server = input("What Server Are You Running? ")
-        if server.lower() not in machines:
-            print("Not Valid Operating System Name")
+    if server_type != None:
+        server = server_type
+    else:
+        server = ""
+        #machine is based on user input
+        while server not in machines:
+            server = input("What Server Are You Running? ")
+            if server.lower() not in machines:
+                print("Not Valid Operating System Name")
 
-    username = input("Enter Centralized Username (Can be sysadmin): ")
-    password = getpass.getpass("Enter Centralized Password: ")
+    if input_user != None:
+        username = input_user
+    else:
+        username = input("Enter Centralized Username (Can be sysadmin): ")
+    if input_pass != None:
+        password = input_pass
+    else:
+        password = getpass.getpass("Enter Centralized Password: ")
 
     #get name of operating system via hostnamectl
     result = subprocess.run(["hostnamectl"], capture_output=True, text=True)
@@ -460,6 +470,16 @@ if len(sys.argv) > 1:
         resolution()
     elif (argument == "-f") or (argument == "--finale"):
         epilogue()
+    elif (sys.argv[1] in machines) and (sys.argv[2] != None) and (sys.argv[3] != None):
+        prologue(sys.argv[1], sys.argv[2], sys.argv[3])
+        exposition()
+        act_I()
+        act_II()
+        act_III()
+        climax()
+        falling_action()
+        resolution()
+        epilogue
     else:
         print(f"{argument}: Not valid script argument")
 else:
