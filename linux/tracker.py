@@ -11,12 +11,27 @@ import mariadb
 import signal
 from pathlib import Path
 
+#get name of operating system via hostnamectl
+result = subprocess.run(["hostnamectl"], capture_output=True, text=True)
+pattern = r"Operating System: (.+)"
+match = re.search(pattern, result.stdout)
+if match:
+    log_name = match.group(1).strip()
+    
+else:
+    print("Opearting system field not found in hostnamectl")
+    log_name = "linux"
+
+#Centralized logging in linux .log file
+logging.basicConfig(level=logging.DEBUG, filename=f"{log_name}.log", 
+        filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
+
 
 #read lines from db.conf file
 config = {}
 
 for line in Path("db.conf").read_text().splitlines():
-    line = line.strip()
+    line in line.strip()
 
     key, value = line.split('=', 1)
     config[key.strip()] = value.strip()
@@ -24,12 +39,7 @@ for line in Path("db.conf").read_text().splitlines():
 database_name = config["databasename"]
 username = config["username"]
 password = config["password"]
-log_name = config["log_name"]
-
-#Centralized logging in linux .log file
-logging.basicConfig(level=logging.DEBUG, filename=f"{log_name}.log", 
-    filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
-
+server = config["server"]
 #connect with the mariadb database
 try:
     conn = mariadb.connect(
@@ -107,15 +117,12 @@ def checkUsers():
         user_id = userSplit[2]
         group_id = userSplit[3]
         if (username not in allowed_users):
-            if username not in ("root", "sysadmin", "splunkfwd"):
-                if (username in blocked_users) or ((user_id == '0') or (group_id == '0')):
-                    os.system("userdel " + username)
-                    logging.error(f"User {username} found on machine with unusual id")
-                    logging.info(f"User {username} removed from machine")
-                elif (int(user_id) > 1000):
-                    os.system("userdel " + userSplit[0])
-                    logging.error(f"User {username} found on machine with unusual id")
-                    logging.info(f"User {username} removed from machine")
+            if (username in blocked_users) or ((user_id == '0') or (group_id == '0')):
+                os.system("userdel " + username)
+            elif (int(user_id) >= 1000):
+                os.system("userdel " + userSplit[0])
+            logging.error(f"User {username} found on machine with unusual id")
+            logging.info(f"User {username} removed from machine")
 
 # Checks Processes that are flagged for being a potentially reverse shell
 def checkProcesses():
@@ -149,17 +156,19 @@ def checkIPs():
 
 # Checks for any additions to the crontab
 def checkCrontab():
-    f = open("/etc/crontab", "r")
-    contents = f.read()
-    f.close()
-    if len(contents) > 0:
-        if (contents != "\n"):
-            #f = open("/etc/crontab", "w")
-            #f.write("\n")
-            #f.close()
-            subprocess.run(["sudo", "truncate", "-s", "0", "/etc/crontab"])
-            logging.error(f"contents of /etc/crontab were not empty")
-            logging.info(f"contents of /etc/crontab removed")
+    crontab = Path("/etc/crontab")
+    if crontab.is_file():
+        f = open("/etc/crontab", "r")
+        contents = f.read()
+        f.close()
+        if len(contents) > 0:
+            if (contents != "\n"):
+                #f = open("/etc/crontab", "w")
+                #f.write("\n")
+                #f.close()
+                subprocess.run(["sudo", "truncate", "-s", "0", "/etc/crontab"])
+                logging.error(f"contents of /etc/crontab were not empty")
+                logging.info(f"contents of /etc/crontab removed")
 
 # Checks for Services that are not allowed
 def checkServices():
