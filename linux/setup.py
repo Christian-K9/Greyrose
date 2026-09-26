@@ -23,12 +23,18 @@ username = ""
 password = ""
 server = ""
 log_name = ""
+splunk = ""
+splunk_port = ""
+forward_server = ""
 
 def prologue():
     global username
     global password
     global server
     global log_name
+    global splunk
+    global splunk_port
+    global forward_server
     #types of servers running
     print("Server Types:")
     print(f"        {machines}")
@@ -43,6 +49,9 @@ def prologue():
 
     username = input("Enter Centralized Username (Can be sysadmin): ")
     password = getpass.getpass("Enter Centralized Password: ")
+    splunk = input("What Is The Splunk Ip Address?: ")
+    splunk_port = input("What is the Splunk Port: ")
+    forward_server = f"{splunk}:{splunk_port}"
 
     #get name of operating system via hostnamectl
     result = subprocess.run(["hostnamectl"], capture_output=True, text=True)
@@ -320,9 +329,6 @@ def falling_action():
     print("Starting Splunk...")
     subprocess.run(["sudo", "/opt/splunkforwarder/bin/splunk", "start", "--accept-license", "-auth", splunk_authentication])
     logging.debug("Started Splunk")
-    splunk = input("What Is The Splunk Ip Address?: ")
-    splunk_port = input("What is the Splunk Port: ")
-    forward_server = f"{splunk}:{splunk_port}"
     
     #add monitors
     print("Adding Monitors...")
