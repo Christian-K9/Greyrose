@@ -471,7 +471,7 @@ if len(sys.argv) > 1:
     elif (argument == "-f") or (argument == "--finale"):
         epilogue()
     elif (sys.argv[1] in machines) and (sys.argv[2] != None) and (sys.argv[3] != None):
-        prologue(sys.argv[1], sys.argv[2], sys.argv[3])
+        prologue(server_type=sys.argv[1], input_user=sys.argv[2], input_pass=sys.argv[3])
         exposition()
         act_I()
         act_II()
