@@ -212,6 +212,7 @@ def getOutputOf(command):
 
 def run():
     while True:
+        fetch()
         checkUsers()
         checkIPs()
         checkProcesses()
