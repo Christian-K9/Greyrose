@@ -169,11 +169,11 @@ def act_II():
     log_location = os.path.join(os.getcwd(), log_name)
                             
     lines = [
-        f"server={server}"
         f"databasename=Greyrose_DB\n",
         f"log_name={log_location}\n",
         f"username={username}\n",
         f"password={password}\n"
+        f"server={server}\n"
     ]
 
     #add last few lines to file
