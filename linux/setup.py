@@ -160,7 +160,7 @@ def act_II():
     #activate mariadb
     subprocess.run(["sudo", "systemctl", "enable", "mariadb"])
     subprocess.run(["sudo", "systemctl", "start", "mariadb"])
-    location = os.path.join(os.getcwd(), "ccdc_venv", "bin", "python3")
+    location = "/opt/ccdc_venv/bin/python3"
 
     logging.debug("Mariadb service started")
 
