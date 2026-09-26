@@ -72,7 +72,7 @@ def exposition():
     #installing necessary libraries
     #putting a 0.1 second gap between each one so processes don't conflict
     package_managers = {"debian": "apt-get", "ubuntu": "apt-get", "centos": "apt-get",
-               "fedora": "yum", "rocky": "yum"}
+               "fedora": "yum", "rocky": "dnf"}
     manager = package_managers[server]
     time.sleep(0.1)
     libraries = ["python3-pip", "mariadb-server", "wget", "nftables", "gcc"]
@@ -137,7 +137,11 @@ def act_I():
     venv_dir = "/opt/ccdc_venv"
     print("creating python environment")
     time.sleep(5)
-    subprocess.run(["sudo", "python3", "-m", "venv", venv_dir])
+    if server == "rocky":
+        python = "python3.11"
+    else:
+        python = "python3"
+    subprocess.run(["sudo", python, "-m", "venv", venv_dir])
     pip_dir = f"{venv_dir}/bin/pip"
     subprocess.run(["sudo", "mkdir", "-p", "/opt/wheels"])
 
