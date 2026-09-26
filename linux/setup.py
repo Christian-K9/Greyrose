@@ -110,9 +110,10 @@ def try_again(library, manager):
     subprocess.run(["sudo", manager, "update"])
     time.sleep(3)
     try:
-        subprocess.run(["sudo", manager, "install", library, "-y"])
-        print("Installation Successful")
-        logging.info(f"reattempt to install {library} successful")
+        if server == "fedora":
+            subprocess.run(["sudo", manager, "install", library, "-y", "--allow-erasing"])
+        else:
+            subprocess.run(["sudo", manager, "install", library, "-y"])
 
     #If things go wrong twice run the 3 subprocesses above via CLI
     except subprocess.CalledProcessError as e:
@@ -345,10 +346,12 @@ def resolution():
     #move python virtual environment to /opt
     subprocess.run(["sudo", "mv", "ccdc_venv", "/opt/ccdc_venv"])
     subprocess.run(["sudo", "mv", "wheels", "/opt/wheels"])
+
     #Add firewall to sbin
     print("Adding firewall command")
     subprocess.run(["sudo", "chown", new_owner, "/usr/local/bin/firewall"])
     subprocess.run(["sudo", "chmod", "700", "/usr/local/bin/firewall"])
+    subprocess.run(["sudo", "mv", "db.conf", "/usr/local/bin/db.conf"])
     logging.debug("Firewall command set")
 
     #move quarentine to root directory
