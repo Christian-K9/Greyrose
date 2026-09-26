@@ -375,7 +375,7 @@ def epilogue():
                  "/opt/wheels": "non-script", "/opt/ccdc_venv": "script", f"{log_name}.log": "non-script",
                 "/usr/local/bin/db.conf": "non-script", "/usr/local/bin/firewall": "script",
                  "/usr/local/bin/tracker.py": "script", "/etc/systemd/system/Greyrose.service": "script",
-                 "db.conf": "non-script", ".setup.py.swp": "non-script"}
+                 ".setup.py.swp": "non-script"}
     
     for i in locations:
         subprocess.run(["sudo", "chown",  "-R", new_owner, i])
