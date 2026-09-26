@@ -89,12 +89,12 @@ def exposition():
         subprocess.run(["sudo", manager, "--fix-missing-install"])
     else:
         subprocess.run(["sudo", "yum", "distro-sync"])
-    time.sleep(1)
+    time.sleep(3)
 
     for i in libraries:
             try:
                 subprocess.run(["sudo", manager, "install", i, "-y"], check=True,)
-                time.sleep(0.1)
+                time.sleep(1)
 
                 print("Installation Sucessful!")
                 logging.debug(f"Installed Library: {i}")
