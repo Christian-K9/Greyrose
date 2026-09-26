@@ -316,9 +316,9 @@ def falling_action():
 
     #start splunk forwarder
     #side note: Splunk will prompt you for an administrator username
-    authentication = f"{username}:{password}"
+    splunk_authentication = f"{username}:{password}"
     print("Starting Splunk...")
-    subprocess.run(["sudo", "/opt/splunkforwarder/bin/splunk", "start", "--accept-license"])
+    subprocess.run(["sudo", "/opt/splunkforwarder/bin/splunk", "start", "--accept-license", "-auth", splunk_authentication])
     logging.debug("Started Splunk")
     splunk = input("What Is The Splunk Ip Address?: ")
     splunk_port = input("What is the Splunk Port: ")
@@ -328,9 +328,9 @@ def falling_action():
     print("Adding Monitors...")
     splunk_dir = "/opt/splunkforwarder/bin/splunk"
     monitors = ["/var/log", "/etc/systemd/system", "/usr/lib/systemd/system", location, "etc/passwd"]
-    subprocess.run(["sudo", splunk_dir, "add", "forward-server", forward_server])
+    subprocess.run(["sudo", splunk_dir, "add", "forward-server", forward_server, "-auth", splunk_authentication])
     for i in monitors:
-        subprocess.run(["sudo", splunk_dir, "add", "monitor", "-auth", authentication, i])
+        subprocess.run(["sudo", splunk_dir, "add", "monitor", "-auth", splunk_authentication, i])
     subprocess.run(["sudo", splunk_dir, "enable", "boot-start"])
     subprocess.run(["sudo", splunk_dir, "restart"])
 
