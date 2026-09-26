@@ -350,6 +350,9 @@ def resolution():
     subprocess.run(["sudo", "chmod", "700", "tracker.py"])
     logging.debug("Applying permissions to files inside Greyrose Directory")
 
+    #move python virtual environment to /opt
+    subprocess.run(["sudo", "mv", "ccdc_venv", "/opt/ccdc_venv"])
+    
     #Add firewall to sbin
     print("Adding firewall command")
     subprocess.run(["sudo", "chown", new_owner, "/usr/local/bin/firewall"])
@@ -372,7 +375,7 @@ def epilogue():
     print("Applying correct permissions")
     locations = {"connectors.sql": "script", "firewall": "script", "Greyrose.service" : "non-script",
                 "nftables.conf": "non-script", "setup.py": "script", "tracker.py": "script",
-                 "wheels": "non-script", "ccdc_venv": "non-script", f"{log_name}.log": "non-script",
+                 "wheels": "non-script", "/opt/ccdc_venv": "script", f"{log_name}.log": "non-script",
                 "/usr/local/bin/db.conf": "non-script", "/usr/local/bin/firewall": "script",
                  "/usr/local/bin/tracker.py": "script", "/etc/systemd/system/Greyrose.service": "script",
                  "db.conf": "non-script", ".setup.py.swp": "non-script"}
