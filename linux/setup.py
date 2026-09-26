@@ -368,20 +368,29 @@ def epilogue():
     
     #check for correct permissions
     print("Applying correct permissions")
-    locations = {"connectors.sql": "script", "firewall": "script", "Greyrose.service" : "non-script",
-                "nftables.conf": "non-script", "setup.py": "script", "tracker.py": "script",
-                 "/opt/wheels": "non-script", "/opt/ccdc_venv": "script", f"{log_name}.log": "non-script",
-                "db.conf": "non-script", "/usr/local/bin/firewall": "script",
-                 "/usr/local/bin/tracker.py": "script", "/etc/systemd/system/Greyrose.service": "script",
-                 ".setup.py.swp": "non-script"}
+    locations = {
+            "connectors.sql": "600", 
+            "firewall": "700", 
+            "Greyrose.service": "644",
+            "nftables.conf": "600", 
+            "setup.py": "700", 
+            "tracker.py": "700",
+            "/opt/wheels": "755", 
+            "/opt/ccdc_venv": "755", 
+            f"{log_name}.log": "600",
+            "db.conf": "600", 
+            "/usr/local/bin/firewall": "755",
+            "/usr/local/bin/tracker.py": "755", 
+            "/etc/systemd/system/Greyrose.service": "644"
+        }
     
-    for i in locations:
-        subprocess.run(["sudo", "chown",  "-R", new_owner, i])
-        if locations[i] == "script":
-            permissions = "700"
-        else:
-            permissions = "600"
-        subprocess.run(["sudo", "chmod", permissions, i])
+    for path, perm in locations.items():
+        if os.path.exists(path):
+            subprocess.run(["sudo", "chown", "-R", new_owner, path])
+            if os.path.isdir(path):
+                subprocess.run(["sudo", "chmod", "-R", perm, path])
+            else:
+                subprocess.run(["sudo", "chmod", perm, path])
 
     #check for mariadb service started
     print("Checking if mariadb service is active")
