@@ -338,11 +338,27 @@ def falling_action():
     time.sleep(0.1)
     logging.debug("Fetched splunk forwarder off the internet")
 
+    seed_dir = "/opt/splunkforwarder/etc/system/local"
+    seed_file = os.path.join(seed_dir, "user-seed.conf")
+    
+    # make sure local config directory exists
+    subprocess.run(["sudo", "mkdir", "-p", seed_dir])
+    
+    # write the admin credentials to user-seed.conf
+    seed_content = f"[user_info]\nUSERNAME = {username}\nPASSWORD = {password}\n"
+    
+    # Write file with root permissions
+    subprocess.run(
+        ["sudo", "bash", "-c", f"cat << 'EOF' > {seed_file}\n{seed_content}EOF"],
+        check=True
+    )
+    subprocess.run(["sudo", "chmod", "600", seed_file])
+
     #start splunk forwarder
     #side note: Splunk will prompt you for an administrator username
     splunk_authentication = f"{username}:{password}"
     print("Starting Splunk...")
-    subprocess.run(["sudo", "/opt/splunkforwarder/bin/splunk", "start", "--accept-license", "-auth", splunk_authentication])
+    subprocess.run(["sudo", "/opt/splunkforwarder/bin/splunk", "start", "--accept-license", "--answer-yes", "--no-prompt"])
     logging.debug("Started Splunk")
     
     #add monitors
