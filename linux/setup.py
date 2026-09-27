@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 import re
 import getpass
+import shutil
 
 #assign splunk forwarder based on machine
 forwarders = {"debian": "https://download.splunk.com/products/universalforwarder/releases/10.4.2/linux/splunkforwarder-10.4.2-33c3bf42cd73-linux-amd64.deb",
@@ -172,7 +173,11 @@ def act_I():
 
 
 def act_II():
-    #activate mariadb
+    #checks if the link between mariadb and mysql exists
+    if not shutil.which("mariadb") and shutil.which("mysql"):
+        subprocess.run(["sudo", "ln", "-s", shutil.which("mysql"), "/usr/bin/mariadb"])
+
+    #activate mariadb                
     subprocess.run(["sudo", "systemctl", "enable", "mariadb"])
     subprocess.run(["sudo", "systemctl", "start", "mariadb"])
     location = "/opt/ccdc_venv/bin/python3"
@@ -389,7 +394,7 @@ def epilogue():
             "/usr/local/bin/tracker.py": "755", 
             "/etc/systemd/system/Greyrose.service": "644"
         }
-    
+
     for path, perm in locations.items():
         if os.path.exists(path):
             subprocess.run(["sudo", "chown", "-R", new_owner, path])
