@@ -66,10 +66,10 @@ INSERT INTO allowed_users (name)
 VALUES ("splunkfwd");
 
 INSERT INTO whitelist (ip)
-VALUES ("192.0.2.1")
+VALUES ("192.0.2.1");
 
 INSERT INTO blacklist (ip)
-VALUES ("198.51.100.1")
+VALUES ("198.51.100.1");
 
 --start: default_ports
 
