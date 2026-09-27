@@ -398,6 +398,8 @@ def epilogue():
 
     subprocess.run(["sudo", "systemctl", "daemon-reload"])
     subprocess.run(["sudo", "systemctl", "restart", "Greyrose.service"])
+
+    subprocess.run(["sudo", "ln", "-sf", "/usr/local/bin/firewall", "/usr/bin/firewall"])
     
     #check for correct permissions
     print("Applying correct permissions")
@@ -413,8 +415,8 @@ def epilogue():
             f"{log_name}.log": "600",
             "db.conf": "600", 
             "/usr/local/bin/db.conf": "600",
-            "/usr/local/bin/firewall": "755",
-            "/usr/local/bin/tracker.py": "755", 
+            "/usr/local/bin/firewall": "700",
+            "/usr/local/bin/tracker.py": "700", 
             "/etc/systemd/system/Greyrose.service": "644"
         }
 
