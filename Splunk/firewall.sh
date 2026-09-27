@@ -13,4 +13,6 @@ sudo nft -f nftables.conf
 
 sleep 1
 cd /opt/splunk/bin
+sudo ./splunk restart
+sleep 1
 sudo ./splunk enable list 9997
