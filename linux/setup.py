@@ -185,13 +185,20 @@ def act_II():
     logging.debug("Mariadb service started")
 
     log_location = os.path.join(os.getcwd(), log_name)
-                            
+
+    #for some reason rocky can't tell the difference
+    if server == "rocky":
+        host = "127.0.0.1"
+    else:
+        host = "localhost"
+
     lines = [
         f"databasename=Greyrose_DB\n",
         f"log_name={log_location}\n",
         f"username={username}\n",
-        f"password={password}\n"
-        f"server={server}\n"
+        f"password={password}\n",
+        f"server={server}\n",
+        f"hostname={host}\n"
     ]
 
     #add last few lines to file

@@ -31,6 +31,7 @@ database_name = config["databasename"]
 username = config["username"]
 password = config["password"]
 log_name = config["log_name"]
+host = config["hostname"]
 
 #Centralized logging in linux .log file
 logging.basicConfig(level=logging.DEBUG, filename=f"{log_name}.log", 
@@ -42,7 +43,7 @@ try:
     conn = mariadb.connect(
         user=username,
         password=password,
-        host="localhost",
+        host=host,
         port=3306,
         database="Greyrose_DB"
     )

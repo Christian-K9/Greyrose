@@ -40,12 +40,14 @@ database_name = config["databasename"]
 username = config["username"]
 password = config["password"]
 server = config["server"]
+host = config["hostname"]
+
 #connect with the mariadb database
 try:
     conn = mariadb.connect(
         user=username,
         password=password,
-        host="localhost",
+        host=host,
         port=3306,
         database="Greyrose_DB"
     )
