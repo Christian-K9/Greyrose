@@ -17,3 +17,5 @@ powershell.exe -ExecutionPolicy Bypass -File .\setup.ps1
     enter in ip address and ports of forwarders
 3. Traversal
     go to splunk directory in cmd or powershell
+4. Use the command ./splunk add monitor  C:\Windows\System32\winevt\Logs*.evtx
+C:\inetpub\logs\LogFiles\W3SVC1
