@@ -65,6 +65,9 @@ VALUES ("root");
 INSERT INTO allowed_users (name)
 VALUES ("splunkfwd");
 
+INSERT INTO allowed_users (name)
+VALUES ("nobody");
+
 INSERT INTO whitelist (ip)
 VALUES ("192.0.2.1");
 
