@@ -365,8 +365,10 @@ def falling_action():
     #add monitors
     print("Adding Monitors...")
     splunk_dir = "/opt/splunkforwarder/bin/splunk"
-    monitors = ["/var/log/audit/audit.log", "/etc/systemd/system", "/usr/lib/systemd/system"
-                "/var/log/auth.log", location, "etc/passwd"]
+    monitors = ["/var/log/audit/audit.log", "/var/log/auth.log", location, "etc/passwd"]
+    #service information is unecessary
+    #monitors.append("/etc/systemd/system")
+    #monitors.append("/usr/lib/systemd/system")
     subprocess.run(["sudo", splunk_dir, "add", "forward-server", forward_server, "-auth", splunk_authentication])
     for i in monitors:
         subprocess.run(["sudo", splunk_dir, "add", "monitor", i, "-auth", splunk_authentication])
