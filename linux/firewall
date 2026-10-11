@@ -34,7 +34,7 @@ log_name = config["log_name"]
 host = config["hostname"]
 
 #Centralized logging in linux .log file
-logging.basicConfig(level=logging.DEBUG, filename=f"Greyrose.log", 
+logging.basicConfig(level=logging.DEBUG, filename="Greyrose.log", 
     filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
 
 
