@@ -11,19 +11,9 @@ import mariadb
 import signal
 from pathlib import Path
 
-#get name of operating system via hostnamectl
-result = subprocess.run(["hostnamectl"], capture_output=True, text=True)
-pattern = r"Operating System: (.+)"
-match = re.search(pattern, result.stdout)
-if match:
-    log_name = match.group(1).strip()
-    
-else:
-    print("Opearting system field not found in hostnamectl")
-    log_name = "linux"
 
 #Centralized logging in linux .log file
-logging.basicConfig(level=logging.DEBUG, filename=f"{log_name}.log", 
+logging.basicConfig(level=logging.DEBUG, filename="/opt/Greyrose.log", 
         filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
 
 
