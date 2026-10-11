@@ -65,9 +65,10 @@ def prologue():
         log_name = "linux"
 
     #Centralized logging in linux .log file
-    logging.basicConfig(level=logging.DEBUG, filename=f"{log_name}.log", 
+    logging.basicConfig(level=logging.DEBUG, filename=f"/opt/Greyrose.log", 
             filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
 
+    logging.info(f"Server name: {log_name}")
 
 def exposition():
     #installing necessary libraries
@@ -325,7 +326,6 @@ def falling_action():
     else:
         package = "rpm"
     #get splunk forwarder off the internet
-    location = os.path.join(os.getcwd(), log_name)
     print("Fetching splunk forwarder off the internet...")
     print(f"Forwarder Name: {forwarders[server]}")
     time.sleep(0.1)
@@ -361,11 +361,17 @@ def falling_action():
     print("Starting Splunk...")
     subprocess.run(["sudo", "/opt/splunkforwarder/bin/splunk", "start", "--accept-license", "--answer-yes", "--no-prompt"])
     logging.debug("Started Splunk")
-    
+
+    #add monitors based 
     #add monitors
     print("Adding Monitors...")
     splunk_dir = "/opt/splunkforwarder/bin/splunk"
-    monitors = ["/var/log/audit/audit.log", "/var/log/auth.log", location, "/etc/passwd"]
+    monitors = ["/etc/passwd", "/etc/group", "/home/sysadmin/.ssh", "/opt/Greyrose.log"]
+    if server == "ubuntu":
+        monitors.append("/var/log/auth.log")
+    else:
+        monitors.append("/var/log/audit.log")
+
     #service information is unecessary
     #monitors.append("/etc/systemd/system")
     #monitors.append("/usr/lib/systemd/system")
