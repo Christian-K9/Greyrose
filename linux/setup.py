@@ -233,9 +233,9 @@ def act_II():
     subprocess.run(["sudo", "cp", "firewall", "/usr/local/bin/firewall"])
     subprocess.run(["sudo", "chmod", "700", "/usr/local/bin/firewall"])
 
-    services = {"rocky": ["110", "25", "80", "443", "22", "9997"],
+    services = {"rocky": ["22", "80", "443", "9997"],
                 "fedora": ["53", "9997"],
-                "ubuntu": ["443", "22", "9997"],
+                "ubuntu": ["22", "25", "110", "443", "9997"],
                 "oracle": ["8000", "8089", "9997"]}
 
     for port_number in services[server]:
