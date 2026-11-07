@@ -35,12 +35,12 @@ EOFA
 /opt/splunk/bin/splunk start
 echo "Splunk accounts reset."
 echo "Setting up firewall..."
-yum install -y nftables
+apt install -y nftables
 echo "Defaults env_keep += \"SSH_CONNECTION SSH_CLIENT SSH_TTY\"" >> /etc/sudoers
 echo "Beginning GUI setup..."
-yum update -y
-yum groupinstall -y "Server with GUI"
-systemctl set-default graphical
+apt update -y
+apt install -y "tasksel"
+tasksel
 echo "Preventing password changes..."
 chattr +i /etc/passwd
 chattr +i /opt/splunk/etc/passwd
