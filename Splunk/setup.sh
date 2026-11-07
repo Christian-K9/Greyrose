@@ -40,7 +40,7 @@ echo "Defaults env_keep += \"SSH_CONNECTION SSH_CLIENT SSH_TTY\"" >> /etc/sudoer
 echo "Beginning GUI setup..."
 apt update -y
 apt install -y "tasksel"
-tasksel
+apt install task-xfce-desktop -y
 echo "Preventing password changes..."
 chattr +i /etc/passwd
 chattr +i /opt/splunk/etc/passwd
