@@ -6,6 +6,7 @@ import os
 import time
 import subprocess
 import re
+import os
 from xml.dom.minicompat import StringTypes
 import mariadb
 import signal
@@ -31,6 +32,12 @@ username = config["username"]
 password = config["password"]
 server = config["server"]
 host = config["hostname"]
+
+database_name = os.environ.get("DB_NAME")
+username = os.environ.get("USERNAME")
+password = os.environ.get("PASSWORD")
+server = os.environ.get("SERVER")
+host = os.environ.get("HOSTNAME")
 
 #connect with the mariadb database
 try:

@@ -194,16 +194,16 @@ def act_II():
         host = "localhost"
 
     lines = [
-        f"databasename=Greyrose_DB\n",
-        f"log_name={log_location}\n",
-        f"username={username}\n",
-        f"password={password}\n",
-        f"server={server}\n",
-        f"hostname={host}\n"
+        f"DB_NAME=Greyrose_DB\n",
+        f"LOG_NAME={log_location}\n",
+        f"USERNAME={username}\n",
+        f"PASSWORD={password}\n",
+        f"SERVER={server}\n",
+        f"HOSTNAME={host}\n"
     ]
 
     #add last few lines to file
-    with open("db.conf", "a") as file:
+    with open("db.env", "a") as file:
         file.writelines(lines)
 
 
@@ -266,7 +266,7 @@ def act_III():
     #create service
     subprocess.run(["sudo", "cp", "Greyrose.service", "/etc/systemd/system/Greyrose.service"])
     subprocess.run(["sudo", "cp", "tracker.py", "/usr/local/bin/tracker.py"])
-    subprocess.run(["sudo", "cp", "db.conf", "/usr/local/bin/db.conf"])
+    subprocess.run(["sudo", "mv", "db.env", "/opt/db.env"])
     subprocess.run(["sudo", "chmod", "700", "/usr/local/bin/tracker.py"])
     subprocess.run(["sudo", "mv", "ccdc_venv", "/opt/ccdc_venv"])
     subprocess.run(["sudo", "mv", "wheels", "/opt/wheels"])
@@ -385,6 +385,7 @@ def falling_action():
 
 
 def resolution():
+
     #change the permission of every file in the directory
     print("Applying permissions...")
     subprocess.run(["sudo", "chmod", "700", "setup.py"])
@@ -402,6 +403,7 @@ def resolution():
     subprocess.run(["sudo", "mv", "quarantine", "/root/quarantine"])
     subprocess.run(["sudo", "chown", "root:root", "/root/quarantine"])
     subprocess.run(["sudo", "chmod", "600", "/root/quarantine"])
+
 
 def epilogue():
     print("Final Check....")
@@ -423,8 +425,7 @@ def epilogue():
             "/opt/wheels": "755", 
             "/opt/ccdc_venv": "755", 
             f"{log_name}.log": "600",
-            "db.conf": "600", 
-            "/usr/local/bin/db.conf": "600",
+            "/opt/db.env": "600", 
             "/usr/local/bin/firewall": "700",
             "/usr/local/bin/tracker.py": "700", 
             "/etc/systemd/system/Greyrose.service": "644"

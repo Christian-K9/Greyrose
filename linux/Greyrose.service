@@ -8,6 +8,7 @@ Type=simple
 ExecStart=/opt/ccdc_venv/bin/python3 /usr/local/bin/tracker.py
 # END: LOCATION OF EXECSTART
 WorkingDirectory=/usr/local/bin
+EnvironmentFile=/opt/db.env
 Restart=on-failure
 User=root
 
