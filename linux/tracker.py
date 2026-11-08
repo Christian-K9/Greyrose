@@ -17,7 +17,7 @@ from dotenv import load_dotenv
 logging.basicConfig(level=logging.DEBUG, filename="/opt/Greyrose.log", 
         filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
 
-load_dotenv("/opt/db.env")
+#load_dotenv("/opt/db.env")
 
 database_name = os.environ.get("DB_NAME")
 username = os.environ.get("USERNAME")

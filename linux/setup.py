@@ -211,7 +211,7 @@ def act_II():
 
     subprocess.run(["sudo", "chown", "root:root", "db.env"])
     subprocess.run(["sudo", "chmod", "600", "db.env"])
-    
+
     filename = "connectors.sql"
     replacements = {"--greyrose_user": f"CREATE USER IF NOT EXISTS '{username}'@'{host}' IDENTIFIED BY '{password}';",
                "--granted_privileges": f"GRANT ALL PRIVILEGES ON Greyrose_DB.* TO '{username}'@'{host}';"}
@@ -413,6 +413,7 @@ def resolution():
 def epilogue():
     print("Final Check....")
 
+    subprocess.run(["sudo", "restorecon", "-v", "/opt/db.env"])
     subprocess.run(["sudo", "systemctl", "daemon-reload"])
     subprocess.run(["sudo", "systemctl", "restart", "Greyrose.service"])
 
