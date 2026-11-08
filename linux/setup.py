@@ -77,7 +77,7 @@ def exposition():
                "fedora": "yum", "rocky": "dnf"}
     manager = package_managers[server]
     time.sleep(0.1)
-    libraries = ["python3-pip", "mariadb-server", "wget", "nftables", "gcc"]
+    libraries = ["python3-pip", "mariadb-server", "wget", "nftables", "gcc", "load_dotenv"]
     if server == "ubuntu":
         libraries.append("libmariadb-dev")
         libraries.append("build-essential")
