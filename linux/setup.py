@@ -139,11 +139,7 @@ def act_I():
     venv_dir = "/opt/ccdc_venv"
     print("creating python environment")
     time.sleep(5)
-    if server == "rocky":
-        python = "python3.11"
-    else:
-        python = "python3"
-    subprocess.run(["sudo", python, "-m", "venv", venv_dir])
+    subprocess.run(["sudo", "python3", "-m", "venv", venv_dir])
     pip_dir = f"{venv_dir}/bin/pip"
     subprocess.run(["sudo", "mkdir", "-p", "/opt/wheels"])
 
