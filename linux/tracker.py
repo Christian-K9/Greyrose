@@ -11,12 +11,13 @@ from xml.dom.minicompat import StringTypes
 import mariadb
 import signal
 from pathlib import Path
-
+from dotenv import load_dotenv
 
 #Centralized logging in linux .log file
 logging.basicConfig(level=logging.DEBUG, filename="/opt/Greyrose.log", 
         filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
 
+load_dotenv("/opt/db.env")
 
 database_name = os.environ.get("DB_NAME")
 username = os.environ.get("USERNAME")
