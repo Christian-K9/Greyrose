@@ -77,7 +77,7 @@ def exposition():
                "fedora": "yum", "rocky": "dnf"}
     manager = package_managers[server]
     time.sleep(0.1)
-    libraries = ["python3-pip", "mariadb-server", "wget", "nftables", "gcc", "load_dotenv"]
+    libraries = ["python3-pip", "mariadb-server", "wget", "nftables", "gcc"]
     if server == "ubuntu":
         libraries.append("libmariadb-dev")
         libraries.append("build-essential")
@@ -165,6 +165,8 @@ def act_I():
     time.sleep(0.1)
     subprocess.run([executable, "-m", "pip", "install", "--no-index",
         "--find-links=/opt/wheels", "mariadb[binary]"])
+    time.sleep(0.1)
+    subprocess.run([executable, "-m", "pip", "install", "dotenv"])
     time.sleep(0.1)
 
     subprocess.run(["sudo", "chown", "-R", new_owner, "/opt/wheels"])
