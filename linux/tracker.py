@@ -22,14 +22,19 @@ database_name = os.environ.get("DB_NAME")
 username = os.environ.get("USERNAME")
 password = os.environ.get("PASSWORD")
 server = os.environ.get("SERVER")
-host = os.environ.get("HOSTNAME")
+
+if server == "rocky":
+    hostname = "127.0.0.1"
+else:
+    hostname = "localhost"
+
 
 #connect with the mariadb database
 try:
     conn = mariadb.connect(
         user=username,
         password=password,
-        host=host,
+        host=hostname,
         port=3306,
         database="Greyrose_DB"
     )
