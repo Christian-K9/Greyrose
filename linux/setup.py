@@ -209,9 +209,8 @@ def act_II():
     with open("db.env", "a") as file:
         file.writelines(lines)
 
-    time.sleep(10)
-    print(f"Creating user on {host}")
-    time.sleep(5)
+    subprocess.run(["sudo", "chown", "root:root", "db.env"])
+    subprocess.run(["sudo", "chmod", "600", "db.env"])
     
     filename = "connectors.sql"
     replacements = {"--greyrose_user": f"CREATE USER IF NOT EXISTS '{username}'@'{host}' IDENTIFIED BY '{password}';",
