@@ -27,7 +27,7 @@ database_name = os.environ.get("DB_NAME")
 username = os.environ.get("USERNAME")
 password = os.environ.get("PASSWORD")
 server = os.environ.get("SERVER")
-host = os.environ.get("HOSTNAME")
+hostname = os.environ.get("HOSTNAME")
 
 #Centralized logging in linux .log file
 logging.basicConfig(level=logging.DEBUG, filename="Greyrose.log", 
@@ -39,7 +39,7 @@ try:
     conn = mariadb.connect(
         user=username,
         password=password,
-        host=host,
+        host=hostname,
         port=3306,
         database="Greyrose_DB"
     )
