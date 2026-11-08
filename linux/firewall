@@ -27,7 +27,11 @@ database_name = os.environ.get("DB_NAME")
 username = os.environ.get("USERNAME")
 password = os.environ.get("PASSWORD")
 server = os.environ.get("SERVER")
-hostname = os.environ.get("HOSTNAME")
+
+if server == "rocky":
+    hostname = "127.0.0.1"
+else:
+    hostname = "localhost"
 
 #Centralized logging in linux .log file
 logging.basicConfig(level=logging.DEBUG, filename="Greyrose.log", 
