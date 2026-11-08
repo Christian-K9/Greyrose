@@ -6,6 +6,8 @@ import sys
 import ipaddress
 import re
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 
 def is_valid_ip(ip_str):
     try:
@@ -14,24 +16,18 @@ def is_valid_ip(ip_str):
     except ValueError:
         return False
 
+#decypt db.conf
+#subprocess(["sudo", "gpg", "--batch", "--passphrase", "--output", "configuration.conf", "--decrypt", "db.conf.gpg"])
 
 #connect to database conf file
-config = {}
 
-for line in Path("db.conf").read_text().splitlines():
-    line = line.strip()
+load_dotenv("/opt/db.env")
 
-    if not line or line.startswith("#"):
-        continue
-
-    key, value = line.split("=", 1)
-    config[key.strip()] = value.strip()
-
-database_name = config["databasename"]
-username = config["username"]
-password = config["password"]
-log_name = config["log_name"]
-host = config["hostname"]
+database_name = os.environ.get("DB_NAME")
+username = os.environ.get("USERNAME")
+password = os.environ.get("PASSWORD")
+server = os.environ.get("SERVER")
+host = os.environ.get("HOSTNAME")
 
 #Centralized logging in linux .log file
 logging.basicConfig(level=logging.DEBUG, filename="Greyrose.log", 
