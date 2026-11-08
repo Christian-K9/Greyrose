@@ -209,9 +209,8 @@ def act_II():
     with open("db.env", "a") as file:
         file.writelines(lines)
 
-
     filename = "connectors.sql"
-    replacements = {"--greyrose_user": f"CREATE USER IF NOT EXISTS '{username}'@'localhost' IDENTIFIED BY '{password}';",
+    replacements = {"--greyrose_user": f"CREATE USER IF NOT EXISTS '{username}'@'{host}' IDENTIFIED BY '{password}';",
                "--granted_privileges": f"GRANT ALL PRIVILEGES ON Greyrose_DB.* TO '{username}'@'localhost';"}
     
     #read the file
