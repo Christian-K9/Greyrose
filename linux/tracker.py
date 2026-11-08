@@ -18,21 +18,6 @@ logging.basicConfig(level=logging.DEBUG, filename="/opt/Greyrose.log",
         filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
 
 
-#read lines from db.conf file
-config = {}
-
-for line in Path("db.conf").read_text().splitlines():
-    line in line.strip()
-
-    key, value = line.split('=', 1)
-    config[key.strip()] = value.strip()
-
-database_name = config["databasename"]
-username = config["username"]
-password = config["password"]
-server = config["server"]
-host = config["hostname"]
-
 database_name = os.environ.get("DB_NAME")
 username = os.environ.get("USERNAME")
 password = os.environ.get("PASSWORD")
