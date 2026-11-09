@@ -113,8 +113,8 @@ def checkUsers():
                 logging.info(f"User {username} removed from machine")
             elif (int(user_id) >= 1000):
                 os.system("userdel " + userSplit[0])
-            logging.error(f"User {username} found on machine with unusual id")
-            logging.info(f"User {username} removed from machine")
+            logging.error(f"USER ERROR: User {username} found on machine with unusual id")
+            logging.info(f"USER INFO: User {username} removed from machine")
 
 # Checks Processes that are flagged for being a potentially reverse shell
 def checkProcesses():
@@ -126,8 +126,8 @@ def checkProcesses():
                 processConts = process.split()
                 pid = processConts[1]
                 os.kill(int(pid), signal.SIGKILL)
-                logging.error(f"Process with PID {pid} found on machine")
-                logging.info(f"Process with PID {pid} killed on machine")
+                logging.error(f"PROCESS ERROR: Process with PID {pid} found on machine")
+                logging.info(f"PROCESS INFO: Process with PID {pid} killed on machine")
 
 # Checks For ips that are not allowed by root
 def checkIPs():
@@ -144,7 +144,7 @@ def checkIPs():
                 date = connection[2]
                 time = connection[3]
                 remoteIP = connection[4]
-                logging.error(f"ip address {ipSplit} was found and flagged")
+                logging.error(f"IP ERROR: ip address {ipSplit} was found and flagged")
 
 # Checks for any additions to the crontab
 def checkCrontab():
@@ -158,8 +158,8 @@ def checkCrontab():
                 f = open("/etc/crontab", "w")
                 f.write("\n")
                 f.close()
-                logging.error(f"contents of /etc/crontab were not empty")
-                logging.info(f"contents of /etc/crontab removed")
+                logging.error(f"CRONTAB ERROR: contents of /etc/crontab were not empty")
+                logging.info(f"CRONTAB INFO: contents of /etc/crontab removed")
 
 # Checks for Services that are not allowed
 def checkServices():
@@ -173,8 +173,8 @@ def checkServices():
                 os.system("systemctl disable " + serviceName)
                 os.system("mv /etc/systemd/system/" + serviceName + " /root/quarantine/")
                 os.system("systemctl daemon-reload")
-                logging.error(f"service {serviceName} found and flagged")
-                logging.info(f"service {serviceName} disabled and moved to /root/quarantine")
+                logging.error(f"SERVICE ERROR: service {serviceName} found and flagged")
+                logging.info(f"SERVICE INFO: service {serviceName} disabled and moved to /root/quarantine")
 
 def getOutputOf(command):
     #Check if the command is a string. If it is, It goes through the shell
