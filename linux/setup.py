@@ -241,7 +241,8 @@ def act_II():
     services = {"rocky": ["110", "25", "80", "443", "22", "9997"],
                 "fedora": ["53", "9997"],
                 "ubuntu": ["443", "22", "9997"],
-                "oracle": ["8000", "8089", "9997"]}
+                "oracle": ["8000", "8089", "9997"],
+                "debian": ["443"]}
 
     for port_number in services[server]:
         #source port not usually necessary
