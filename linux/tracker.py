@@ -126,9 +126,9 @@ def checkUsers():
                 index +=1
             elif (int(user_id) >= 1000):
                 os.system("userdel " + userSplit[0])
-            logging.error(f"#UE{index} < User {username} found on machine with unusual id >")
+            #logging.error(f"#UE{index} < User {username} found on machine with unusual id >")
             index +=1
-            logging.info(f"#UI{index} < User {username} removed from machine >")
+            #logging.info(f"#UI{index} < User {username} removed from machine >")
             index +=1
 
 # Checks Processes that are flagged for being a potentially reverse shell
