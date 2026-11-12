@@ -93,6 +93,16 @@ def fetch():
     cursor.execute("SELECT ip FROM blacklist")
     blacklist = [row[0] for row in cursor.fetchall()]
 
+'''
+User Error: #UE{index}#
+Process Error: #PE{index}#
+IP Error: #IPE{index}#
+Crontab Error: #CTE{index}#
+Service Error: #SE{index}#
+'''
+
+index = 0
+
 #Rules for users
 #   1. no suspicious user names
 #   2. no user id or group id that is 0
@@ -109,12 +119,16 @@ def checkUsers():
         if (username not in allowed_users):
             if (username in blocked_users) or ((user_id == '0') or (group_id == '0')):
                 os.system("userdel " + username)
-                logging.error(f"User {username} found on machine with unusual id")
-                logging.info(f"User {username} removed from machine")
+                logging.error(f"#UE{index} < User {username} found on machine with unusual id >")
+                index +=1
+                logging.info(f"#UI{index} < User {username} removed from machine >")
+                index +=1
             elif (int(user_id) >= 1000):
                 os.system("userdel " + userSplit[0])
-            logging.error(f"USER ERROR: User {username} found on machine with unusual id")
-            logging.info(f"USER INFO: User {username} removed from machine")
+            logging.error(f"#UE{index} < User {username} found on machine with unusual id >")
+            index +=1
+            logging.info(f"#UI{index} < User {username} removed from machine >")
+            index +=1
 
 # Checks Processes that are flagged for being a potentially reverse shell
 def checkProcesses():
@@ -126,8 +140,10 @@ def checkProcesses():
                 processConts = process.split()
                 pid = processConts[1]
                 os.kill(int(pid), signal.SIGKILL)
-                logging.error(f"PROCESS ERROR: Process with PID {pid} found on machine")
-                logging.info(f"PROCESS INFO: Process with PID {pid} killed on machine")
+                logging.error(f"#PE{index} < Process with PID {pid} found on machine >")
+                index +=1
+                logging.info(f"#PI{index} < Process with PID {pid} killed on machine >")
+                index += 1
 
 # Checks For ips that are not allowed by root
 def checkIPs():
@@ -144,7 +160,8 @@ def checkIPs():
                 date = connection[2]
                 time = connection[3]
                 remoteIP = connection[4]
-                logging.error(f"IP ERROR: ip address {ipSplit} was found and flagged")
+                logging.error(f"#IPE{index} < ip address {ipSplit} was found and flagged >")
+                index +=1
 
 # Checks for any additions to the crontab
 def checkCrontab():
@@ -158,8 +175,10 @@ def checkCrontab():
                 f = open("/etc/crontab", "w")
                 f.write("\n")
                 f.close()
-                logging.error(f"CRONTAB ERROR: contents of /etc/crontab were not empty")
-                logging.info(f"CRONTAB INFO: contents of /etc/crontab removed")
+                logging.error(f"#CTE{index} < contents of /etc/crontab were not empty >")
+                index +=1
+                logging.info(f"CTI{index} < contents of /etc/crontab removed >")
+                index +=1
 
 # Checks for Services that are not allowed
 def checkServices():
@@ -173,8 +192,10 @@ def checkServices():
                 os.system("systemctl disable " + serviceName)
                 os.system("mv /etc/systemd/system/" + serviceName + " /root/quarantine/")
                 os.system("systemctl daemon-reload")
-                logging.error(f"SERVICE ERROR: service {serviceName} found and flagged")
-                logging.info(f"SERVICE INFO: service {serviceName} disabled and moved to /root/quarantine")
+                logging.error(f"#SE{index} < service {serviceName} found and flagged >")
+                index +=1
+                logging.info(f"#SI{index} < service {serviceName} disabled and moved to /root/quarantine >")
+                index +=1
 
 def getOutputOf(command):
     #Check if the command is a string. If it is, It goes through the shell
