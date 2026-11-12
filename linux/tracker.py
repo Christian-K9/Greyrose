@@ -57,6 +57,7 @@ blacklist = []
 allowed_services = []
 blocked_services = []
 reverseShellFlags = [r"python3?\s+-c\b", r"/bin/(ba)?sh\s+-i\b", r"nc\s+.*-e\b", r"ncat\s+.*-e\b", r"socat\s+.*EXEC\b"]
+index = 0
 
 def fetch():
     global accepted_ports
@@ -101,13 +102,13 @@ Crontab Error: #CTE{index}#
 Service Error: #SE{index}#
 '''
 
-index = 0
 
 #Rules for users
 #   1. no suspicious user names
 #   2. no user id or group id that is 0
 #   3. no user id that is over 1000
 def checkUsers():
+    global index
     f = open("/etc/passwd", "r")
     users = f.readlines()
     f.close()
@@ -132,6 +133,7 @@ def checkUsers():
 
 # Checks Processes that are flagged for being a potentially reverse shell
 def checkProcesses():
+    global index
     processes = getOutputOf("ps aux")
     processesSplit = processes.split("\n")
     for process in processesSplit:
@@ -147,6 +149,7 @@ def checkProcesses():
 
 # Checks For ips that are not allowed by root
 def checkIPs():
+    global index
     connections = getOutputOf("who")
     connectionsSplit = connections.split("\n")
     for connection in connectionsSplit:
@@ -165,6 +168,7 @@ def checkIPs():
 
 # Checks for any additions to the crontab
 def checkCrontab():
+    global index
     crontab = Path("/etc/crontab")
     if crontab.is_file():
         f = open("/etc/crontab", "r")
@@ -182,6 +186,7 @@ def checkCrontab():
 
 # Checks for Services that are not allowed
 def checkServices():
+    global index
     services = getOutputOf("systemctl list-units --type=service --state=running")
     servicesSplit = services.split("\n")
     for service in servicesSplit:
